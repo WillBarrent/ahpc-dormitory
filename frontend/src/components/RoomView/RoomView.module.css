@@ -1,0 +1,95 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--border);
+  width: 100%;
+  max-width: 36rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.label {
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.25rem;
+}
+
+.roomNumber {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.meta {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-top: 0.5rem;
+}
+
+.freeCount {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.backButton {
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: 2px solid var(--border);
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.backButton:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.bed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 2px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.bedOccupied {
+  border-color: var(--border-light);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.bedStatus {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.bedStatusOccupied {
+  color: var(--text-faint);
+}

@@ -1,0 +1,768 @@
+/* ================================================
+   AHPC Living — Warm Brutalist Editorial
+   ================================================ */
+
+/* --- PAGE SHELL --- */
+.page {
+  background: var(--bg);
+  overflow-x: hidden;
+}
+
+/* --- HEADER --- */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg);
+  border-bottom: 2px solid var(--border);
+}
+
+.logo {
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* --- HERO --- */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6rem 1.5rem 2rem;
+  position: relative;
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 600px;
+  animation: fadeSlideUp 0.8s ease-out both;
+}
+
+.badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 0.5rem 1.25rem;
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+}
+
+.headingLine {
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  font-weight: 900;
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: var(--accent);
+  letter-spacing: -0.03em;
+}
+
+.subtitle {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+  max-width: 480px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  padding-top: 0.5rem;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.9375rem 2rem;
+  border: 2px solid var(--accent);
+  border-radius: 100px;
+  background: var(--accent);
+  color: white;
+  font-family: var(--font);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 14, 59, 0.25);
+}
+
+.btnOutline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9375rem 2rem;
+  border: 2px solid var(--border);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btnOutline:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+
+.heroVisual {
+  display: none;
+}
+
+.heroImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.scrollHint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fadeSlideUp 0.8s 0.4s ease-out both;
+}
+
+.scrollLine {
+  width: 1.5px;
+  height: 40px;
+  background: var(--text-faint);
+  animation: scrollPulse 2s ease-in-out infinite;
+  transform-origin: top;
+}
+
+/* --- SECTIONS SHARED --- */
+.section {
+  padding: 3rem 1.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.sectionInner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.pillWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.pill {
+  display: inline-flex;
+  padding: 0.625rem 1.5rem;
+  border: 1.5px solid var(--border-light);
+  border-radius: 100px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  background: white;
+}
+
+/* --- ABOUT --- */
+.aboutText {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 740px;
+  margin: 0 auto 2rem;
+}
+
+.aboutImages {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.aboutImgBlock {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.aboutImg {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+.aboutImgTop {
+  object-position: center top;
+}
+
+/* --- DORMITORY CARD --- */
+.dormCard {
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid var(--border-light);
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+  transition: box-shadow 0.3s;
+}
+
+.dormCard:hover {
+  box-shadow: 0 8px 40px rgba(0, 14, 59, 0.08);
+}
+
+.dormImage {
+  flex-shrink: 0;
+}
+
+.dormImg {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.dormInfo {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dormTitle {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.dormDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dormDetail {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dormDetailIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(0, 14, 59, 0.06);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.dormDetail div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.dormDetailLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.dormDetailValue {
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+
+.dormLink {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+  transition: gap 0.2s;
+}
+
+.dormLink:hover {
+  gap: 0.75rem;
+}
+
+/* --- AMENITIES --- */
+.amenitiesGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.amenityCard {
+  padding: 1.75rem;
+  border: 1.5px solid var(--border-light);
+  border-radius: 14px;
+  background: white;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.amenityCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 14, 59, 0.07);
+}
+
+.amenityIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: rgba(0, 14, 59, 0.06);
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.amenityName {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.amenityDesc {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* --- RULES & PRICING --- */
+.rulesSection {
+  padding: 3rem 1.5rem;
+  background: var(--accent);
+  color: white;
+}
+
+.rulesLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.rulesBlock {
+  flex: 1;
+}
+
+.rulesTitle {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+
+.rulesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rulesItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(245, 240, 232, 0.85);
+}
+
+.rulesCheck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  text-align: center;
+}
+
+.priceLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.5);
+  margin-bottom: 0.75rem;
+}
+
+.priceValue {
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: white;
+}
+
+.priceSub {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: rgba(245, 240, 232, 0.6);
+  margin-top: 0.5rem;
+}
+
+/* --- PROCESS --- */
+.processSection {
+  padding: 3rem 1.5rem;
+  background: var(--bg);
+  border-top: 1px solid var(--border-light);
+}
+
+.processTitle {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+.processText {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+/* --- CONTACTS --- */
+.contactSection {
+  padding: 3rem 1.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.contactTitle {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.contactCard {
+  padding: 2rem;
+  border: 1.5px solid var(--border-light);
+  border-radius: 16px;
+  background: white;
+  align-self: start;
+}
+
+.contactCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.contactIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+
+.contactCardLabel {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.contactDesc {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.contactValue {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.contactDivider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 1.25rem 0;
+}
+
+.contactAddress {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.scheduleBlock {
+  margin-bottom: 1rem;
+}
+
+.scheduleLabel {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.scheduleValue {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* --- FOOTER --- */
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1.5rem;
+  border-top: 2px solid var(--border);
+}
+
+.footerLogo {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.footerCopy {
+  font-size: 0.8125rem;
+  color: var(--text-faint);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 0.8; transform: scaleY(0.6); }
+}
+
+/* --- DESKTOP --- */
+@media (min-width: 768px) {
+  .header {
+    padding: 1.25rem 3rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .hero {
+    padding: 7rem 3rem 3rem;
+  }
+
+  .heroInner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4rem;
+  }
+
+  .heroText {
+    gap: 1.75rem;
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
+  }
+
+  .section {
+    padding: 3.5rem 3rem;
+  }
+
+  .aboutImages {
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .aboutImg {
+    height: 280px;
+  }
+
+  .dormCard {
+    flex-direction: row;
+  }
+
+  .dormImage {
+    width: 380px;
+    flex-shrink: 0;
+  }
+
+  .dormImg {
+    height: 100%;
+    min-height: 280px;
+  }
+
+  .dormInfo {
+    padding: 2.5rem;
+    justify-content: center;
+  }
+
+  .amenitiesGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .rulesSection {
+    padding: 3.5rem 3rem;
+  }
+
+  .rulesLayout {
+    flex-direction: row;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .priceBlock {
+    min-width: 280px;
+    padding: 3rem 2.5rem;
+  }
+
+  .processSection {
+    padding: 3.5rem 3rem;
+  }
+
+  .contactSection {
+    padding: 3.5rem 3rem;
+  }
+
+  .contactGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .footer {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 2rem 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    padding: 0 4rem;
+  }
+
+  .heroVisual {
+    display: block;
+    flex: 0 0 400px;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 500px;
+    box-shadow: 0 24px 60px rgba(0, 14, 59, 0.18);
+  }
+
+  .section {
+    padding: 4rem 4rem;
+  }
+
+  .amenitiesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .rulesSection {
+    padding: 4rem 4rem;
+  }
+
+  .processSection {
+    padding: 4rem 4rem;
+  }
+
+  .contactSection {
+    padding: 4rem 4rem;
+  }
+}

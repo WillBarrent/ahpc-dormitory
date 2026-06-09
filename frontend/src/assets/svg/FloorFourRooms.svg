@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="452.79mm" height="310.44mm" viewBox="0 0 1283.5 880">
+  <title>FloorFourRooms</title>
+  <rect x="3" y="2.5" width="1278" height="875" fill="none" stroke="#000" stroke-width="5"/>
+  <rect x="363" y="2.5" width="273.5" height="435" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M918,2.5v435H636.5V2.5Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <rect x="2.5" y="2.5" width="235.5" height="436.5" fill="none" stroke="#000" stroke-width="5"/>
+  <rect x="1044.8" y="2.5" width="236.2" height="437.5" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M2.5,876h357V520.2H239V439H2.5Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M478,520.5v357H359.5v-357Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M359.5,520.5v357H239v-357Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M598,520.5v357H478v-357Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M838,520.5v357H683v-357Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M1044.8,520.5v357H838v-357Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M838,877V520.5h207.4V440H1281V877Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <text transform="translate(545.15 806.65) rotate(-90)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro"><tspan letter-spacing="-0.09em">Т</tspan><tspan x="12.96" y="0" letter-spacing="0em">е</tspan><tspan x="28.86" y="0">х. поме</tspan><tspan x="128.45" y="0" letter-spacing="0em">щ</tspan><tspan x="152.29" y="0">ение</tspan></text>
+  <text transform="translate(428.89 772.57) rotate(-90)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro"><tspan letter-spacing="-0.01em">У</tspan><tspan x="16.22" y="0">борн</tspan><tspan x="86.37" y="0" letter-spacing="0.01em">а</tspan><tspan x="102.01" y="0">я</tspan></text>
+  <text transform="translate(768.89 772.57) rotate(-90)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro"><tspan letter-spacing="-0.01em">У</tspan><tspan x="16.22" y="0">борн</tspan><tspan x="86.37" y="0" letter-spacing="0.01em">а</tspan><tspan x="102.01" y="0">я</tspan></text>
+  <text transform="translate(281 704.28)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro">402</text>
+  <text transform="translate(98.84 658.5)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro">403</text>
+  <text transform="translate(98.84 221.25)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro">404</text>
+  <text transform="translate(478 221.25)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro">405</text>
+  <text transform="translate(760.5 221.25)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro">406</text>
+  <text transform="translate(1143.34 221.25)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro">407</text>
+  <text transform="translate(1143.34 699)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro">408</text>
+  <text transform="translate(918 699)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro">409</text>
+</svg>

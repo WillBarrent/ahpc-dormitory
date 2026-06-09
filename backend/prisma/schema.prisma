@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  login     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+}
+
+model Student {
+  id         Int           @id @default(autoincrement())
+  fullName   String
+  course     Int
+  group      String
+  phone      String?
+  roomId     Int?
+  room       Room?         @relation(fields: [roomId], references: [id])
+  bedNumber  Int?
+  status     StudentStatus @default(PENDING)
+  movedIn    DateTime?
+  movedOut   DateTime?
+  payments   Payment[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  student   Student  @relation(fields: [studentId], references: [id])
+  month     Int
+  year      Int
+  amount    Int
+  paidAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@unique([studentId, month, year])
+}
+
+model Room {
+  id          Int       @id @default(autoincrement())
+  number      Int       @unique
+  floor       Int
+  totalBeds   Int
+  type        RoomType  @default(RESIDENTIAL)
+  students    Student[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum RoomType {
+  RESIDENTIAL
+  NON_RESIDENTIAL
+  TOILET
+  TECH
+}
+
+enum StudentStatus {
+  PENDING
+  ACTIVE
+}

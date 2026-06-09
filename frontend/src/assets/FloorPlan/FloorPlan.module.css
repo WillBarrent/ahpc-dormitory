@@ -1,0 +1,53 @@
+.room {
+  fill: #50c878;
+}
+
+.room:hover {
+  fill: #3ddb72;
+  cursor: pointer;
+}
+
+.reserved {
+  fill: #ffd700;
+}
+
+.reserved:hover {
+  fill: #ffe333;
+}
+
+.occupied {
+  fill: #e74c3c;
+}
+
+.occupied:hover {
+  fill: #ff6b5a;
+}
+
+.nonResidental {
+  fill: #5b7db1;
+}
+
+.nonResidental:hover {
+  fill: #6fa1e0;
+}
+
+.toilet {
+  fill: #7bc8c4;
+}
+
+.toilet:hover {
+  fill: #8fd8d4;
+}
+
+.techRoom {
+  fill: #7F8C8D;
+}
+
+.techRoom:hover {
+  fill: #8FA0A1;
+}
+
+svg > text {
+  fill: #333333;
+  cursor: default;
+}

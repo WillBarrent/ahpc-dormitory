@@ -1,0 +1,26 @@
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import authRoutes from './routes/auth.js'
+import roomRoutes from './routes/rooms.js'
+import studentRoutes from './routes/students.js'
+import paymentRoutes from './routes/payments.js'
+import statsRoutes from './routes/stats.js'
+
+dotenv.config()
+
+const app = express()
+const PORT = process.env.PORT || 3001
+
+app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }))
+app.use(express.json())
+
+app.use('/api/auth', authRoutes)
+app.use('/api/rooms', roomRoutes)
+app.use('/api/students', studentRoutes)
+app.use('/api/payments', paymentRoutes)
+app.use('/api/stats', statsRoutes)
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`)
+})

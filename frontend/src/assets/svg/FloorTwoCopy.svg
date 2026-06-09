@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="452.61mm" height="311.5mm" viewBox="0 0 1282.99 882.99">
+  <title>FloorTwoCopy</title>
+  <rect x="5" y="3" width="1274.99" height="877.49" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M482.7,440.5H644.49V2.5h-242V359.4h80.2Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M1004.49,3.5v317h158V3.5Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M122.5,3.5v317h160V3.5Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M643.49,440.5V2.5h239V361.7h-82v78.8Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M1124,442.5v-121h39V4h117.5V442.5Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M163.5,440.5V319.9H123.4V3.5H2.5v437Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M1124,442.5V563.39h39v317.1h117.5v-438Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M163.5,440.5V561.89H123.4v318.6H2.5v-440Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M322.5,521h-159v40.89H123.4l1.1,318.6h198Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M843.49,521H1124v40.79l39,.3v318.4H843.49Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M564.5,880.49V521H442.9V880.49Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M442.5,880.49v-359h-120v359Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <path d="M843.49,880.49V521h-120V880.49Z" transform="translate(0 0)" fill="none" stroke="#000" stroke-width="5"/>
+  <text transform="translate(32.98 242.81)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">205</text>
+  <text transform="translate(494.51 207.27)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">207</text>
+  <text transform="translate(732.53 207.27)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">208</text>
+  <text transform="translate(1053.09 185.1)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">209</text>
+  <text transform="translate(170.61 185.1)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">206</text>
+  <text transform="translate(1188.45 221.5)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">210</text>
+  <text transform="translate(1188.45 661.49)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">211</text>
+  <text transform="translate(974.86 710.18)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">212</text>
+  <text transform="translate(202.5 710.18)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">203</text>
+  <text transform="translate(32.98 661.49)" font-size="36" font-family="Roboto-Bold, Roboto" font-weight="700" style="isolation: isolate">204</text>
+  <text transform="translate(402.5 761.83) rotate(-90)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro"><tspan letter-spacing="-0.01em">У</tspan><tspan x="16.22" y="0">борн</tspan><tspan x="86.37" y="0" letter-spacing="0.01em">а</tspan><tspan x="102.01" y="0">я</tspan></text>
+  <text transform="translate(797.89 761.83) rotate(-90)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro"><tspan letter-spacing="-0.01em">У</tspan><tspan x="16.22" y="0">борн</tspan><tspan x="86.37" y="0" letter-spacing="0.01em">а</tspan><tspan x="102.01" y="0">я</tspan></text>
+  <text transform="translate(516.89 804.83) rotate(-90)" font-size="32" font-family="MyriadPro-Regular, Myriad Pro"><tspan letter-spacing="-0.09em">Т</tspan><tspan x="12.96" y="0" letter-spacing="0em">е</tspan><tspan x="28.86" y="0">х. поме</tspan><tspan x="128.45" y="0" letter-spacing="0em">щ</tspan><tspan x="152.29" y="0">ение</tspan></text>
+</svg>

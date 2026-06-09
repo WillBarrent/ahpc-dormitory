@@ -1,0 +1,19 @@
+.button {
+  margin-left: auto;
+  padding: 0.4rem 0.875rem;
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.button:hover {
+  background: var(--text);
+  color: var(--bg);
+}
