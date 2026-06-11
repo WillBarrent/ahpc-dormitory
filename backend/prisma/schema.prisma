@@ -45,6 +45,20 @@ model Payment {
   @@unique([studentId, month, year])
 }
 
+model Booking {
+  id        Int           @id @default(autoincrement())
+  fullName  String
+  course    Int
+  group     String
+  phone     String?
+  roomId    Int
+  room      Room          @relation(fields: [roomId], references: [id])
+  bedNumber Int
+  status    BookingStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
 model Room {
   id          Int       @id @default(autoincrement())
   number      Int       @unique
@@ -52,6 +66,7 @@ model Room {
   totalBeds   Int
   type        RoomType  @default(RESIDENTIAL)
   students    Student[]
+  bookings    Booking[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -66,4 +81,10 @@ enum RoomType {
 enum StudentStatus {
   PENDING
   ACTIVE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
 }

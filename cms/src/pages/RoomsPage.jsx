@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { api } from '../utils/api'
+import { exportToExcel } from '../utils/excel'
 import styles from './RoomsPage.module.css'
 
 const FLOORS = [2, 3, 4, 5]
@@ -56,6 +57,24 @@ export default function RoomsPage() {
     <>
       <div className={styles.header}>
         <h1 className={styles.title}>Комнаты</h1>
+        <button className={styles.exportBtn} onClick={() => {
+          const data = rooms.map((r) => ({
+            number: r.number,
+            floor: r.floor,
+            type: TYPE_LABELS[r.type],
+            totalBeds: r.totalBeds,
+            occupiedBeds: r.occupiedBeds,
+            freeBeds: r.totalBeds - r.occupiedBeds,
+          }))
+          exportToExcel(
+            data,
+            ['number', 'floor', 'type', 'totalBeds', 'occupiedBeds', 'freeBeds'],
+            { number: 'Номер', floor: 'Этаж', type: 'Тип', totalBeds: 'Всего мест', occupiedBeds: 'Занято', freeBeds: 'Свободно' },
+            'комнаты'
+          )
+        }}>
+          📥 Excel
+        </button>
       </div>
 
       <div className={styles.floorSelector}>

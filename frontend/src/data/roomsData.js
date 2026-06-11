@@ -13,17 +13,28 @@ export async function fetchRoomMap(floorNumber) {
     if (room.type !== 'RESIDENTIAL') continue
 
     const total = room.totalBeds
-    const occupied = room.occupiedBeds
+    const takenBedNumbers = new Set(
+      (room.takenBeds || []).map((t) => t.bedNumber)
+    )
     const beds = []
     for (let b = 0; b < total; b++) {
-      beds.push({ id: `${room.number}-bed-${b + 1}`, occupied: b < occupied })
+      const bedNum = b + 1
+      beds.push({ id: `${room.number}-bed-${bedNum}`, occupied: takenBedNumbers.has(bedNum) })
     }
 
+    const occupied = takenBedNumbers.size
     let status = 'free'
     if (occupied > 0 && occupied < total) status = 'reserved'
     if (occupied >= total) status = 'occupied'
 
-    map[room.number] = { number: room.number, totalBeds: total, occupiedBeds: occupied, status, beds }
+    map[room.number] = {
+      number: room.number,
+      totalBeds: total,
+      occupiedBeds: occupied,
+      status,
+      beds,
+      roomId: room.id,
+    }
   }
   return map
 }

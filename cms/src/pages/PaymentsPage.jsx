@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '../utils/api'
+import { exportToExcel } from '../utils/excel'
 import styles from './PaymentsPage.module.css'
 
 const MONTH_NAMES = [
@@ -60,6 +61,24 @@ export default function PaymentsPage() {
           <span className={styles.statPaid}>{paidCount} оплатили</span>
           <span className={styles.statUnpaid}>{unpaidCount} не оплатили</span>
         </div>
+        <button className={styles.exportBtn} onClick={() => {
+          const data = students.map((s) => ({
+            fullName: s.fullName,
+            group: s.group,
+            roomNumber: s.room ? s.room.number : '',
+            amount: AMOUNT.toLocaleString('ru-RU') + ' ₸',
+            paid: s.paid ? 'Оплачено' : 'Не оплачено',
+            paidAt: s.payment ? formatDate(s.payment.paidAt) : '—',
+          }))
+          exportToExcel(
+            data,
+            ['fullName', 'group', 'roomNumber', 'amount', 'paid', 'paidAt'],
+            { fullName: 'ФИО', group: 'Группа', roomNumber: 'Комната', amount: 'Сумма', paid: 'Статус', paidAt: 'Дата оплаты' },
+            'оплата'
+          )
+        }}>
+          📥 Excel
+        </button>
       </div>
 
       <div className={styles.filters}>

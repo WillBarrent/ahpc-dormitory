@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import { api } from '../utils/api'
+import { exportToExcel } from '../utils/excel'
 import StudentModal from '../components/StudentModal'
 import ApplicationPrint from '../components/ApplicationPrint'
 import DutyRosterPrint from '../components/DutyRosterPrint'
+import ImportButton from '../components/ImportButton/ImportButton'
 import styles from './StudentsPage.module.css'
 
 export default function StudentsPage() {
@@ -93,6 +95,49 @@ export default function StudentsPage() {
     return new Date(dateStr).toLocaleDateString('ru-RU')
   }
 
+  const STUDENT_EXPORT_COLUMNS = ['fullName', 'course', 'group', 'phone', 'roomNumber', 'bedNumber', 'status', 'movedIn']
+  const STUDENT_EXPORT_LABELS = {
+    fullName: 'ФИО', course: 'Курс', group: 'Группа', phone: 'Телефон',
+    roomNumber: 'Комната', bedNumber: 'Место', status: 'Статус', movedIn: 'Дата заселения',
+  }
+
+  const handleExportExcel = () => {
+    const data = students.map((s) => ({
+      fullName: s.fullName,
+      course: s.course,
+      group: s.group,
+      phone: s.phone || '',
+      roomNumber: s.room ? s.room.number : '',
+      bedNumber: s.bedNumber || '',
+      status: s.status === 'ACTIVE' ? 'Заселён' : 'Ожидает',
+      movedIn: formatDate(s.movedIn),
+    }))
+    exportToExcel(data, STUDENT_EXPORT_COLUMNS, STUDENT_EXPORT_LABELS, 'студенты')
+  }
+
+  const IMPORT_MAPPING = {
+    'ФИО': 'fullName',
+    'Курс': 'course',
+    'Группа': 'group',
+    'Телефон': 'phone',
+    'Номер комнаты': 'roomNumber',
+    'Место': 'bedNumber',
+  }
+
+  const handleImportStudents = async (rows) => {
+    const res = await api('/import/students', {
+      method: 'POST',
+      body: JSON.stringify({ students: rows }),
+    })
+    const msg = [
+      `Создано: ${res.created}`,
+      `Пропущено: ${res.skipped}`,
+      res.errors.length > 0 ? `Ошибки:\n${res.errors.map(e => `  Строка ${e.row}: ${e.error}`).join('\n')}` : '',
+    ].join('\n')
+    alert(msg)
+    fetchStudents()
+  }
+
   return (
     <>
       <div className={styles.header}>
@@ -101,6 +146,14 @@ export default function StudentsPage() {
           <button className={styles.rosterBtn} onClick={handleRosterPrintClick}>
             Печать списка дежурного
           </button>
+          <button className={styles.rosterBtn} onClick={handleExportExcel}>
+            📥 Excel
+          </button>
+          <ImportButton
+            label="📤 Импорт"
+            mapping={IMPORT_MAPPING}
+            onImport={handleImportStudents}
+          />
           <button className={styles.addBtn} onClick={handleAdd}>
             + Добавить студента
           </button>

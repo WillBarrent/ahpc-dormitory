@@ -11,7 +11,10 @@ router.get('/', async (req, res) => {
 
   const rooms = await prisma.room.findMany({
     where,
-    include: { students: { where: { movedOut: null } } },
+    include: {
+      students: { where: { movedOut: null } },
+      bookings: { where: { status: 'PENDING' } },
+    },
     orderBy: { number: 'asc' },
   })
 
@@ -21,7 +24,11 @@ router.get('/', async (req, res) => {
     floor: room.floor,
     totalBeds: room.totalBeds,
     type: room.type,
-    occupiedBeds: room.students.length,
+    occupiedBeds: room.students.length + room.bookings.length,
+    takenBeds: [
+      ...room.students.map(s => ({ bedNumber: s.bedNumber, status: 'occupied' })),
+      ...room.bookings.map(b => ({ bedNumber: b.bedNumber, status: 'booked' })),
+    ],
   }))
 
   res.json(result)

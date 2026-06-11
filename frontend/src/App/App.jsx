@@ -4,6 +4,8 @@ import HomePage from '../components/HomePage/HomePage.jsx'
 import Navbar from '../components/Navbar/Navbar.jsx'
 import FloorSelector from '../components/FloorSelector/FloorSelector.jsx'
 import RoomView from '../components/RoomView/RoomView.jsx'
+import BookingForm from '../components/BookingForm/BookingForm.jsx'
+import BookingSuccess from '../components/BookingSuccess/BookingSuccess.jsx'
 import useT from '../i18n/useT.js'
 import { fetchRoomMap } from '../data/roomsData.js'
 import FloorOne from '../assets/FloorPlan/FloorOne.jsx'
@@ -24,6 +26,8 @@ const FLOOR_PLANS = {
 function FloorsPage() {
   const [activeFloor, setActiveFloor] = useState(2)
   const [selectedRoom, setSelectedRoom] = useState(null)
+  const [bookingBed, setBookingBed] = useState(null)
+  const [submittedBooking, setSubmittedBooking] = useState(null)
   const [legendOpen, setLegendOpen] = useState(false)
   const [roomMap, setRoomMap] = useState({})
   const t = useT()
@@ -37,10 +41,34 @@ function FloorsPage() {
   function handleFloorChange(floor) {
     setActiveFloor(floor)
     setSelectedRoom(null)
+    setBookingBed(null)
+    setSubmittedBooking(null)
   }
 
   function handleRoomClick(roomNumber) {
     setSelectedRoom(roomMap[roomNumber] || null)
+    setBookingBed(null)
+    setSubmittedBooking(null)
+  }
+
+  function handleBook(bedNumber) {
+    setBookingBed(bedNumber)
+  }
+
+  function handleBookingSuccess(booking) {
+    setSubmittedBooking(booking)
+    setBookingBed(null)
+    fetchRoomMap(activeFloor).then(setRoomMap)
+  }
+
+  function handleBookingCancel() {
+    setBookingBed(null)
+  }
+
+  function handleBackToFloorPlan() {
+    setSelectedRoom(null)
+    setBookingBed(null)
+    setSubmittedBooking(null)
   }
 
   return (
@@ -51,9 +79,30 @@ function FloorsPage() {
         <FloorSelector activeFloor={activeFloor} onSelect={handleFloorChange} />
 
         <main className={s.main}>
-          {selectedRoom ? (
+          {submittedBooking ? (
             <div className={s.roomView}>
-              <RoomView room={selectedRoom} onBack={() => setSelectedRoom(null)} />
+              <BookingSuccess
+                room={selectedRoom}
+                bedNumber={submittedBooking.bedNumber}
+                onBack={handleBackToFloorPlan}
+              />
+            </div>
+          ) : selectedRoom && bookingBed ? (
+            <div className={s.roomView}>
+              <BookingForm
+                room={selectedRoom}
+                bedNumber={bookingBed}
+                onSuccess={handleBookingSuccess}
+                onCancel={handleBookingCancel}
+              />
+            </div>
+          ) : selectedRoom ? (
+            <div className={s.roomView}>
+              <RoomView
+                room={selectedRoom}
+                onBack={() => setSelectedRoom(null)}
+                onBook={handleBook}
+              />
             </div>
           ) : (
             <>

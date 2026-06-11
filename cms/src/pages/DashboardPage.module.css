@@ -23,7 +23,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   margin-bottom: 32px;
 }
@@ -36,6 +36,18 @@
   gap: 16px;
   align-items: flex-start;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 2px solid transparent;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.cardHighlight {
+  border-color: #818cf8;
 }
 
 .cardIcon {
@@ -63,6 +75,10 @@
 
 .cardIcon[data-color='amber'] {
   background: #fffbeb;
+}
+
+.cardIcon[data-color='purple'] {
+  background: #f5f3ff;
 }
 
 .cardBody {
@@ -128,6 +144,22 @@
   color: #6b7280;
 }
 
+.chipIndigo {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.sectionRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
 .section {
   background: #fff;
   border-radius: 10px;
@@ -174,4 +206,119 @@
 .loading {
   color: #9ca3af;
   font-size: 14px;
+}
+
+/* --- Activity feed --- */
+
+.activityFeed {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.activityItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.activityItem:hover {
+  background: #f9fafb;
+}
+
+.activityIcon {
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #f3f4f6;
+}
+
+.activityIcon[data-type='booking_new'] { background: #eef2ff; }
+.activityIcon[data-type='booking_confirmed'] { background: #dcfce7; }
+.activityIcon[data-type='booking_rejected'] { background: #fee2e2; }
+.activityIcon[data-type='student_new'] { background: #fef3c7; }
+.activityIcon[data-type='student_in'] { background: #dcfce7; }
+.activityIcon[data-type='student_out'] { background: #f3f4f6; }
+.activityIcon[data-type='payment'] { background: #ecfdf5; }
+
+.activityBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.activityText {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activitySub {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.activityTime {
+  font-size: 11px;
+  color: #9ca3af;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* --- Quick actions --- */
+
+.quickActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.actionBtn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.actionIcon {
+  font-size: 18px;
+}
+
+.actionLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+.emptyText {
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 24px 0;
 }

@@ -1,0 +1,52 @@
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  max-width: 440px;
+  margin: 0 auto;
+  text-align: center;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
+}
+
+.icon {
+  color: #10b981;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 0.75rem;
+}
+
+.text {
+  font-size: 0.9375rem;
+  color: var(--text-primary, #334155);
+  margin: 0 0 0.5rem;
+  line-height: 1.5;
+}
+
+.subtext {
+  font-size: 0.875rem;
+  color: var(--text-muted, #64748b);
+  margin: 0 0 1.75rem;
+  line-height: 1.5;
+}
+
+.backButton {
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent, #3b82f6);
+  border: none;
+  padding: 0.65rem 1.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.backButton:hover {
+  opacity: 0.9;
+}

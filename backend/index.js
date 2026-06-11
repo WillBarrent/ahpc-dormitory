@@ -6,6 +6,9 @@ import roomRoutes from './routes/rooms.js'
 import studentRoutes from './routes/students.js'
 import paymentRoutes from './routes/payments.js'
 import statsRoutes from './routes/stats.js'
+import bookingRoutes from './routes/bookings.js'
+import activityRoutes from './routes/activity.js'
+import importRoutes from './routes/import.js'
 
 dotenv.config()
 
@@ -20,6 +23,9 @@ app.use('/api/rooms', roomRoutes)
 app.use('/api/students', studentRoutes)
 app.use('/api/payments', paymentRoutes)
 app.use('/api/stats', statsRoutes)
+app.use('/api/bookings', bookingRoutes)
+app.use('/api/activity', activityRoutes)
+app.use('/api/import', importRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)

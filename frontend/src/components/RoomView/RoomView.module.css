@@ -93,3 +93,21 @@
 .bedStatusOccupied {
   color: var(--text-faint);
 }
+
+.bookButton {
+  font-family: var(--font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 2px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.bookButton:hover {
+  opacity: 0.85;
+}

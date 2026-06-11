@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import StudentsPage from './pages/StudentsPage'
 import RoomsPage from './pages/RoomsPage'
 import PaymentsPage from './pages/PaymentsPage'
+import BookingsPage from './pages/BookingsPage'
 
 function ProtectedRoute({ children }) {
   return getToken() ? children : <Navigate to="/login" />
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/rooms" element={<RoomsPage />} />
           <Route path="/payments" element={<PaymentsPage />} />
+          <Route path="/bookings" element={<BookingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

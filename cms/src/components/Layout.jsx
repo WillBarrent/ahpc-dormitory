@@ -24,6 +24,9 @@ export default function Layout() {
           <NavLink to="/students" className={linkClass}>
             Студенты
           </NavLink>
+          <NavLink to="/bookings" className={linkClass}>
+            Бронирования
+          </NavLink>
           <NavLink to="/rooms" className={linkClass}>
             Комнаты
           </NavLink>

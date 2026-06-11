@@ -47,6 +47,40 @@
   fill: #8FA0A1;
 }
 
+/* === Floor 1 — нежилые зоны (без hover — этаж не интерактивный) === */
+
+.admin {
+  fill: #C2795C;
+}
+
+.mainHall {
+  fill: #7EC8E3;
+}
+
+.lounge {
+  fill: #E8C87A;
+}
+
+.kitchen {
+  fill: #8DB88D;
+}
+
+.buffet {
+  fill: #E8947A;
+}
+
+.reception {
+  fill: #B8A9D4;
+}
+
+.security {
+  fill: #7A8B9E;
+}
+
+.commandant {
+  fill: #6B7FA8;
+}
+
 svg > text {
   fill: #333333;
   cursor: default;
