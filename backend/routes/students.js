@@ -35,6 +35,11 @@ router.get('/', async (req, res) => {
         where: { month: currentMonth, year: currentYear },
         take: 1,
       },
+      absences: {
+        where: { status: { in: ['PENDING', 'ACTIVE'] } },
+        take: 1,
+        orderBy: { createdAt: 'desc' },
+      },
     },
     orderBy: { fullName: 'asc' },
   })
@@ -43,6 +48,8 @@ router.get('/', async (req, res) => {
     ...s,
     paidThisMonth: s.payments.length > 0,
     payments: undefined,
+    currentAbsence: s.absences[0] || null,
+    absences: undefined,
   }))
 
   res.json(result)

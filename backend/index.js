@@ -9,6 +9,7 @@ import statsRoutes from './routes/stats.js'
 import bookingRoutes from './routes/bookings.js'
 import activityRoutes from './routes/activity.js'
 import importRoutes from './routes/import.js'
+import absenceRoutes from './routes/absences.js'
 
 dotenv.config()
 
@@ -26,6 +27,7 @@ app.use('/api/stats', statsRoutes)
 app.use('/api/bookings', bookingRoutes)
 app.use('/api/activity', activityRoutes)
 app.use('/api/import', importRoutes)
+app.use('/api/absences', absenceRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)

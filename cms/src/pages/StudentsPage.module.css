@@ -300,6 +300,26 @@
   background: #bbf7d0;
 }
 
+.leaveBtn {
+  padding: 6px 12px;
+  background: #fef3c7;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #92400e;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.leaveBtn:hover {
+  background: #fde68a;
+}
+
+.absenceOverdue {
+  color: #dc2626;
+  font-weight: 600;
+}
+
 .printHidden {
   position: fixed;
   left: -9999px;

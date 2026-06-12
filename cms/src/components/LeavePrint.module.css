@@ -1,0 +1,88 @@
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm 25mm;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 14pt;
+  line-height: 1.6;
+  color: #000;
+  background: #fff;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 24pt;
+}
+
+.ministry {
+  font-weight: 700;
+  font-size: 14pt;
+  margin: 0 0 8pt;
+}
+
+.title {
+  text-align: center;
+  font-size: 18pt;
+  font-weight: 700;
+  margin: 24pt 0 4pt;
+}
+
+.body {
+  margin-top: 12pt;
+}
+
+.body p {
+  margin: 8pt 0;
+}
+
+.hint {
+  font-size: 10pt;
+  font-style: italic;
+  color: #666;
+  text-align: center;
+  margin: 0 0 12pt;
+}
+
+.underline {
+  border-bottom: 1px solid #000;
+  padding: 0 8pt;
+  min-width: 120pt;
+  display: inline-block;
+}
+
+.bold {
+  font-weight: 700;
+  margin-top: 16pt;
+}
+
+.list {
+  margin: 8pt 0 16pt 24pt;
+  padding: 0;
+}
+
+.list li {
+  margin-bottom: 4pt;
+}
+
+.reason {
+  padding-left: 16pt;
+}
+
+.signRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24pt;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #000;
+  margin: 32pt 0;
+}
+
+@media print {
+  .page {
+    padding: 15mm 20mm;
+    margin: 0;
+  }
+}

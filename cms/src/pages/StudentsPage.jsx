@@ -6,6 +6,7 @@ import StudentModal from '../components/StudentModal'
 import ApplicationPrint from '../components/ApplicationPrint'
 import DutyRosterPrint from '../components/DutyRosterPrint'
 import ImportButton from '../components/ImportButton/ImportButton'
+import LeaveModal from '../components/LeaveModal'
 import styles from './StudentsPage.module.css'
 
 export default function StudentsPage() {
@@ -18,6 +19,7 @@ export default function StudentsPage() {
   const [printingStudent, setPrintingStudent] = useState(null)
   const [rosterStudents, setRosterStudents] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
+  const [leaveStudent, setLeaveStudent] = useState(null)
   const printRef = useRef(null)
   const rosterRef = useRef(null)
 
@@ -244,6 +246,14 @@ export default function StudentsPage() {
                                 Подтвердить
                               </button>
                             )}
+                            {s.status === 'ACTIVE' && (
+                              <button
+                                className={styles.leaveBtn}
+                                onClick={(e) => { e.stopPropagation(); setLeaveStudent(s) }}
+                              >
+                                Убытие
+                              </button>
+                            )}
                             <button
                               className={styles.checkoutBtn}
                               onClick={(e) => { e.stopPropagation(); handleCheckout(s.id) }}
@@ -295,6 +305,19 @@ export default function StudentsPage() {
                               {!s.roomId ? 'Не заселён' : s.status === 'PENDING' ? 'Ожидает подписания' : 'Заселён'}
                             </span>
                           </div>
+                          {s.currentAbsence && (
+                            <div className={styles.detailItem}>
+                              <span className={styles.detailLabel}>Убытие</span>
+                              <span className={`${styles.detailValue} ${new Date(s.currentAbsence.endDate) < new Date() ? styles.absenceOverdue : ''}`}>
+                                {s.currentAbsence.status === 'PENDING'
+                                  ? 'Ожидает подписи'
+                                  : new Date(s.currentAbsence.endDate) < new Date()
+                                    ? `Просрочено до ${new Date(s.currentAbsence.endDate).toLocaleDateString('ru-RU')}`
+                                    : `До ${new Date(s.currentAbsence.endDate).toLocaleDateString('ru-RU')}`
+                                }
+                              </span>
+                            </div>
+                          )}
                           <div className={styles.detailItem}>
                             <span className={styles.detailLabel}>Оплата за текущий месяц</span>
                             {s.paidThisMonth ? (
@@ -332,6 +355,17 @@ export default function StudentsPage() {
         <div className={styles.printHidden}>
           <DutyRosterPrint ref={rosterRef} students={rosterStudents} />
         </div>
+      )}
+
+      {leaveStudent && (
+        <LeaveModal
+          student={leaveStudent}
+          onClose={() => setLeaveStudent(null)}
+          onSaved={() => {
+            setLeaveStudent(null)
+            fetchStudents()
+          }}
+        />
       )}
     </>
   )
