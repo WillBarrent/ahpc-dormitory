@@ -8,7 +8,7 @@ const router = Router()
 router.post('/', async (req, res) => {
   const { fullName, course, group, phone, roomId, bedNumber } = req.body
 
-  if (!fullName || !course || !group || !roomId || !bedNumber) {
+  if (!fullName || !course || !group || !phone || !roomId || !bedNumber) {
     return res.status(400).json({ error: 'Заполните все обязательные поля' })
   }
 
@@ -55,6 +55,26 @@ router.post('/', async (req, res) => {
   })
 
   res.status(201).json(booking)
+})
+
+// GET /api/bookings/status — public, check booking status by name + phone
+router.get('/status', async (req, res) => {
+  const { fullName, phone } = req.query
+
+  if (!fullName || !phone) {
+    return res.status(400).json({ error: 'Укажите ФИО и телефон' })
+  }
+
+  const bookings = await prisma.booking.findMany({
+    where: {
+      fullName: { contains: fullName.trim(), mode: 'insensitive' },
+      phone: phone.trim(),
+    },
+    include: { room: { select: { number: true, floor: true } } },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  res.json(bookings)
 })
 
 // All remaining routes require admin auth

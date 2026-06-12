@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import s from './BookingSuccess.module.css'
 
 export default function BookingSuccess({ room, bedNumber, onBack }) {
@@ -15,11 +16,17 @@ export default function BookingSuccess({ room, bedNumber, onBack }) {
         <strong>{room.number}</strong>.
       </p>
       <p className={s.subtext}>
-        Администратор рассмотрит вашу заявку и свяжется с вами.
+        Администратор рассмотрит вашу заявку. Статус можно проверить на{' '}
+        <Link to="/booking-status" className={s.statusLink}>странице проверки</Link>.
       </p>
-      <button onClick={onBack} className={s.backButton}>
-        К планировке
-      </button>
+      <div className={s.actions}>
+        <button onClick={onBack} className={s.backButton}>
+          К планировке
+        </button>
+        <Link to="/booking-status" className={s.statusButton}>
+          Проверить статус
+        </Link>
+      </div>
     </div>
   )
 }

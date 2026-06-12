@@ -27,7 +27,7 @@ export default function BookingForm({ room, bedNumber, onSuccess, onCancel }) {
           fullName,
           course: Number(course),
           group,
-          phone: phone || null,
+          phone,
           roomId: room.roomId,
           bedNumber,
         }),
@@ -104,13 +104,14 @@ export default function BookingForm({ room, bedNumber, onSuccess, onCancel }) {
         </div>
 
         <div className={s.field}>
-          <label className={s.fieldLabel}>Телефон (необязательно)</label>
+          <label className={s.fieldLabel}>Телефон <span className={s.required}>*</span></label>
           <input
             className={s.input}
             type="text"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+7 (777) 123-45-67"
+            required
           />
         </div>
 

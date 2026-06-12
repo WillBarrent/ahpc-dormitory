@@ -6,7 +6,10 @@ export default function Navbar() {
   return (
     <nav className={s.nav}>
       <Link to="/" className={s.logo}>AHPC Living</Link>
-      <LangSwitch />
+      <div className={s.right}>
+        <Link to="/booking-status" className={s.statusLink}>Статус брони</Link>
+        <LangSwitch />
+      </div>
     </nav>
   )
 }

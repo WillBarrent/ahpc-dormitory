@@ -6,6 +6,7 @@ import FloorSelector from '../components/FloorSelector/FloorSelector.jsx'
 import RoomView from '../components/RoomView/RoomView.jsx'
 import BookingForm from '../components/BookingForm/BookingForm.jsx'
 import BookingSuccess from '../components/BookingSuccess/BookingSuccess.jsx'
+import BookingStatusPage from '../components/BookingStatusPage/BookingStatusPage.jsx'
 import useT from '../i18n/useT.js'
 import { fetchRoomMap } from '../data/roomsData.js'
 import FloorOne from '../assets/FloorPlan/FloorOne.jsx'
@@ -137,6 +138,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/floors" element={<FloorsPage />} />
+      <Route path="/booking-status" element={<BookingStatusPage />} />
     </Routes>
   )
 }

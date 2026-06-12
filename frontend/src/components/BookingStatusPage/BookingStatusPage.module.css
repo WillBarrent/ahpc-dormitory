@@ -1,0 +1,310 @@
+.page {
+  min-height: 100vh;
+  background: #f8fafc;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ---- Header ---- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  text-decoration: none;
+}
+
+.backLink {
+  font-size: 14px;
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+/* ---- Main ---- */
+.main {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.card {
+  width: 100%;
+  max-width: 600px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 32px 32px 0;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ---- Form ---- */
+.form {
+  padding: 24px 32px;
+}
+
+.fields {
+  display: flex;
+  gap: 16px;
+}
+
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.input {
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  transition: border 0.15s;
+}
+
+.input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input::placeholder {
+  color: #94a3b8;
+}
+
+.error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.submitBtn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px 20px;
+  background: #1e293b;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitBtn:hover {
+  background: #334155;
+}
+
+.submitBtn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* ---- Results ---- */
+.results {
+  padding: 0 32px 32px;
+}
+
+.resultsTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 16px;
+}
+
+.bookingList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bookingCard {
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.bookingCard.statusPending {
+  border-left: 4px solid #eab308;
+}
+
+.bookingCard.statusConfirmed {
+  border-left: 4px solid #22c55e;
+}
+
+.bookingCard.statusRejected {
+  border-left: 4px solid #ef4444;
+}
+
+.bookingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.bookingRoom {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge.statusPending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge.statusConfirmed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge.statusRejected {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.bookingDetails {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 12px;
+}
+
+.bookingDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detailLabel {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.detailValue {
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* ---- Status messages ---- */
+.confirmedMsg,
+.rejectedMsg,
+.pendingMsg {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.confirmedMsg {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.rejectedMsg {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.pendingMsg {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* ---- Empty ---- */
+.empty {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.emptyIcon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #475569;
+  margin: 0 0 8px;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.emptyLink {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.emptyLink:hover {
+  text-decoration: underline;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 500px) {
+  .fields {
+    flex-direction: column;
+  }
+
+  .cardHeader {
+    padding: 24px 20px 0;
+  }
+
+  .form,
+  .results {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}

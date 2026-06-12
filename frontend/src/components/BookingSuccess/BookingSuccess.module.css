@@ -34,6 +34,23 @@
   line-height: 1.5;
 }
 
+.statusLink {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.statusLink:hover {
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .backButton {
   font-family: inherit;
   font-size: 0.9375rem;
@@ -49,4 +66,22 @@
 
 .backButton:hover {
   opacity: 0.9;
+}
+
+.statusButton {
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1e293b;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 0.65rem 1.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.statusButton:hover {
+  background: #e2e8f0;
 }
