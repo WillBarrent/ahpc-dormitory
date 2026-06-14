@@ -1,6 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '../utils/api'
 import { exportToExcel } from '../utils/excel'
+import ConfirmModal from '../components/ConfirmModal'
+import AlertModal from '../components/AlertModal'
+import SortTh from '../components/SortTh'
+import useSort from '../utils/useSort'
+import useDebounce from '../utils/useDebounce'
+import usePagination from '../utils/usePagination'
+import PaginationBar from '../components/PaginationBar'
 import styles from './BookingsPage.module.css'
 
 const STATUS_LABELS = {
@@ -14,37 +21,41 @@ export default function BookingsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('PENDING')
+  const [confirm, setConfirm] = useState(null)
+  const [alertMsg, setAlertMsg] = useState(null)
+  const debouncedSearch = useDebounce(search, 400)
 
   const fetchBookings = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams()
-    if (search) params.set('search', search)
+    if (debouncedSearch) params.set('search', debouncedSearch)
     if (statusFilter) params.set('status', statusFilter)
     const query = params.toString()
     const data = await api(`/bookings${query ? `?${query}` : ''}`)
     setBookings(data)
     setLoading(false)
-  }, [search, statusFilter])
+  }, [debouncedSearch, statusFilter])
 
   useEffect(() => {
     fetchBookings()
   }, [fetchBookings])
 
   const handleConfirm = async (id) => {
-    if (!window.confirm('Подтвердить бронь и заселить студента?')) return
     try {
       await api(`/bookings/${id}/confirm`, { method: 'POST' })
       fetchBookings()
     } catch (err) {
-      alert(err.message)
+      setAlertMsg(err.message)
     }
   }
 
   const handleReject = async (id) => {
-    if (!window.confirm('Отклонить бронь?')) return
     await api(`/bookings/${id}/reject`, { method: 'POST' })
     fetchBookings()
   }
+
+  const { sortedData, sortColumn, sortDir, handleSort } = useSort(bookings, 'createdAt')
+  const { paginatedData, page, totalPages, setPage } = usePagination(sortedData)
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '—'
@@ -112,24 +123,34 @@ export default function BookingsPage() {
         ) : bookings.length === 0 ? (
           <div className={styles.empty}>Бронирования не найдены</div>
         ) : (
+          <>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>ФИО</th>
-                <th>Группа</th>
-                <th>Курс</th>
-                <th>Телефон</th>
-                <th>Комната</th>
-                <th>Место</th>
-                <th>Дата</th>
-                <th>Статус</th>
+                <SortTh column="fullName" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>ФИО</SortTh>
+                <SortTh column="group" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Группа</SortTh>
+                <SortTh column="course" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Курс</SortTh>
+                <SortTh column="phone" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Телефон</SortTh>
+                <SortTh column="room.number" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Комната</SortTh>
+                <SortTh column="bedNumber" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Место</SortTh>
+                <SortTh column="createdAt" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Дата</SortTh>
+                <SortTh column="status" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Статус</SortTh>
                 <th>Действия</th>
               </tr>
             </thead>
             <tbody>
-              {bookings.map((b) => (
-                <tr key={b.id}>
-                  <td>{b.fullName}</td>
+              {paginatedData.map((b) => (
+                <tr key={b.id} className={b.similarStudent ? styles.rowFlagged : ''}>
+                  <td>
+                    <div className={styles.nameCell}>
+                      {b.fullName}
+                      {b.similarStudent && (
+                        <span className={styles.flagBadge} title={`Похож на: ${b.similarStudent.fullName}`}>
+                          ⚠️ {b.similarStudent.fullName}
+                        </span>
+                      )}
+                    </div>
+                  </td>
                   <td>{b.group}</td>
                   <td>{b.course}</td>
                   <td>{b.phone || '—'}</td>
@@ -146,13 +167,21 @@ export default function BookingsPage() {
                       <div className={styles.actions}>
                         <button
                           className={styles.confirmBtn}
-                          onClick={() => handleConfirm(b.id)}
+                          onClick={() => setConfirm({
+                            message: 'Подтвердить бронь и заселить студента?',
+                            action: () => handleConfirm(b.id),
+                            variant: 'default',
+                          })}
                         >
                           Подтвердить
                         </button>
                         <button
                           className={styles.rejectBtn}
-                          onClick={() => handleReject(b.id)}
+                          onClick={() => setConfirm({
+                            message: 'Отклонить бронь?',
+                            action: () => handleReject(b.id),
+                            variant: 'danger',
+                          })}
                         >
                           Отклонить
                         </button>
@@ -163,8 +192,32 @@ export default function BookingsPage() {
               ))}
             </tbody>
           </table>
+          <PaginationBar page={page} totalPages={totalPages} onPage={setPage} />
+          </>
         )}
       </div>
+
+      <ConfirmModal
+        open={confirm !== null}
+        title="Подтверждение"
+        message={confirm?.message || ''}
+        confirmLabel="Да"
+        cancelLabel="Отмена"
+        variant={confirm?.variant || 'default'}
+        onConfirm={async () => {
+          const action = confirm?.action
+          setConfirm(null)
+          if (action) await action()
+        }}
+        onCancel={() => setConfirm(null)}
+      />
+
+      <AlertModal
+        open={alertMsg !== null}
+        title="Ошибка"
+        message={alertMsg || ''}
+        onClose={() => setAlertMsg(null)}
+      />
     </>
   )
 }

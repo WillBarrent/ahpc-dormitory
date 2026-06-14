@@ -4,6 +4,13 @@ import { api } from '../utils/api'
 import { exportToExcel } from '../utils/excel'
 import LeavePrint from '../components/LeavePrint'
 import LeaveModal from '../components/LeaveModal'
+import ConfirmModal from '../components/ConfirmModal'
+import AlertModal from '../components/AlertModal'
+import SortTh from '../components/SortTh'
+import useSort from '../utils/useSort'
+import useDebounce from '../utils/useDebounce'
+import usePagination from '../utils/usePagination'
+import PaginationBar from '../components/PaginationBar'
 import styles from './LeavesPage.module.css'
 
 const STATUS_LABELS = {
@@ -19,6 +26,9 @@ export default function LeavesPage() {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [printingAbsence, setPrintingAbsence] = useState(null)
   const [leaveStudent, setLeaveStudent] = useState(null)
+  const [confirm, setConfirm] = useState(null)
+  const [alertMsg, setAlertMsg] = useState(null)
+  const debouncedSearch = useDebounce(search, 400)
 
   const printRef = useRef(null)
   const handlePrint = useReactToPrint({
@@ -29,35 +39,33 @@ export default function LeavesPage() {
   const fetchAbsences = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams()
-    if (search) params.set('search', search)
+    if (debouncedSearch) params.set('search', debouncedSearch)
     if (statusFilter && statusFilter !== 'ALL') params.set('status', statusFilter)
     const query = params.toString()
     const data = await api(`/absences${query ? `?${query}` : ''}`)
     setAbsences(data)
     setLoading(false)
-  }, [search, statusFilter])
+  }, [debouncedSearch, statusFilter])
 
   useEffect(() => {
     fetchAbsences()
   }, [fetchAbsences])
 
   const handleConfirm = async (id) => {
-    if (!window.confirm('Подтвердить подписание расписки?')) return
     try {
       await api(`/absences/${id}/confirm`, { method: 'PATCH' })
       fetchAbsences()
     } catch (err) {
-      alert(err.message)
+      setAlertMsg(err.message)
     }
   }
 
   const handleComplete = async (id) => {
-    if (!window.confirm('Отметить студента как вернувшегося?')) return
     try {
       await api(`/absences/${id}/complete`, { method: 'PATCH' })
       fetchAbsences()
     } catch (err) {
-      alert(err.message)
+      setAlertMsg(err.message)
     }
   }
 
@@ -65,6 +73,9 @@ export default function LeavesPage() {
     setPrintingAbsence(absence)
     setTimeout(() => handlePrint(), 100)
   }
+
+  const { sortedData, sortColumn, sortDir, handleSort } = useSort(absences, 'startDate')
+  const { paginatedData, page, totalPages, setPage } = usePagination(sortedData)
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '—'
@@ -146,20 +157,21 @@ export default function LeavesPage() {
         ) : absences.length === 0 ? (
           <div className={styles.empty}>Убытия не найдены</div>
         ) : (
+          <>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Студент</th>
-                <th>Группа</th>
+                <SortTh column="student.fullName" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Студент</SortTh>
+                <SortTh column="student.group" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Группа</SortTh>
                 <th>Комната</th>
-                <th>Период</th>
-                <th>Причина</th>
-                <th>Статус</th>
+                <SortTh column="startDate" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Период</SortTh>
+                <SortTh column="reason" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Причина</SortTh>
+                <SortTh column="status" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Статус</SortTh>
                 <th>Действия</th>
               </tr>
             </thead>
             <tbody>
-              {absences.map((a) => (
+              {paginatedData.map((a) => (
                 <tr key={a.id} className={isOverdue(a) ? styles.rowOverdue : ''}>
                   <td className={styles.studentCell}>{a.student?.fullName || '—'}</td>
                   <td>{a.student?.group || '—'}</td>
@@ -189,7 +201,11 @@ export default function LeavesPage() {
                           </button>
                           <button
                             className={styles.confirmBtn}
-                            onClick={() => handleConfirm(a.id)}
+                            onClick={() => setConfirm({
+                              message: 'Подтвердить подписание расписки?',
+                              action: () => handleConfirm(a.id),
+                              variant: 'default',
+                            })}
                           >
                             Подтвердить
                           </button>
@@ -198,7 +214,11 @@ export default function LeavesPage() {
                       {a.status === 'ACTIVE' && (
                         <button
                           className={styles.completeBtn}
-                          onClick={() => handleComplete(a.id)}
+                          onClick={() => setConfirm({
+                            message: 'Отметить студента как вернувшегося?',
+                            action: () => handleComplete(a.id),
+                            variant: 'default',
+                          })}
                         >
                           Вернулся
                         </button>
@@ -212,6 +232,8 @@ export default function LeavesPage() {
               ))}
             </tbody>
           </table>
+          <PaginationBar page={page} totalPages={totalPages} onPage={setPage} />
+          </>
         )}
       </div>
 
@@ -235,6 +257,28 @@ export default function LeavesPage() {
           }}
         />
       )}
+
+      <ConfirmModal
+        open={confirm !== null}
+        title="Подтверждение"
+        message={confirm?.message || ''}
+        confirmLabel="Да"
+        cancelLabel="Отмена"
+        variant={confirm?.variant || 'default'}
+        onConfirm={async () => {
+          const action = confirm?.action
+          setConfirm(null)
+          if (action) await action()
+        }}
+        onCancel={() => setConfirm(null)}
+      />
+
+      <AlertModal
+        open={alertMsg !== null}
+        title="Ошибка"
+        message={alertMsg || ''}
+        onClose={() => setAlertMsg(null)}
+      />
     </>
   )
 }

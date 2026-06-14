@@ -7,6 +7,13 @@ import ApplicationPrint from '../components/ApplicationPrint'
 import DutyRosterPrint from '../components/DutyRosterPrint'
 import ImportButton from '../components/ImportButton/ImportButton'
 import LeaveModal from '../components/LeaveModal'
+import ConfirmModal from '../components/ConfirmModal'
+import AlertModal from '../components/AlertModal'
+import SortTh from '../components/SortTh'
+import useSort from '../utils/useSort'
+import useDebounce from '../utils/useDebounce'
+import usePagination from '../utils/usePagination'
+import PaginationBar from '../components/PaginationBar'
 import styles from './StudentsPage.module.css'
 
 export default function StudentsPage() {
@@ -20,6 +27,9 @@ export default function StudentsPage() {
   const [rosterStudents, setRosterStudents] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
   const [leaveStudent, setLeaveStudent] = useState(null)
+  const [confirm, setConfirm] = useState(null)
+  const [alertMsg, setAlertMsg] = useState(null)
+  const debouncedSearch = useDebounce(search, 400)
   const printRef = useRef(null)
   const rosterRef = useRef(null)
 
@@ -36,27 +46,28 @@ export default function StudentsPage() {
   const fetchStudents = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams()
-    if (search) params.set('search', search)
+    if (debouncedSearch) params.set('search', debouncedSearch)
     if (floor) params.set('floor', floor)
     const query = params.toString()
 
     const data = await api(`/students${query ? `?${query}` : ''}`)
     setStudents(data)
     setLoading(false)
-  }, [search, floor])
+  }, [debouncedSearch, floor])
 
   useEffect(() => {
     fetchStudents()
   }, [fetchStudents])
 
+  const { sortedData, sortColumn, sortDir, handleSort } = useSort(students, 'fullName')
+  const { paginatedData, page, totalPages, setPage } = usePagination(sortedData)
+
   const handleCheckout = async (id) => {
-    if (!window.confirm('Выселить студента?')) return
     await api(`/students/${id}/checkout`, { method: 'POST' })
     fetchStudents()
   }
 
   const handleConfirm = async (id) => {
-    if (!window.confirm('Подтвердить подписание заявления?')) return
     await api(`/students/${id}/confirm`, { method: 'POST' })
     fetchStudents()
   }
@@ -136,7 +147,7 @@ export default function StudentsPage() {
       `Пропущено: ${res.skipped}`,
       res.errors.length > 0 ? `Ошибки:\n${res.errors.map(e => `  Строка ${e.row}: ${e.error}`).join('\n')}` : '',
     ].join('\n')
-    alert(msg)
+    setAlertMsg(msg)
     fetchStudents()
   }
 
@@ -155,6 +166,7 @@ export default function StudentsPage() {
             label="📤 Импорт"
             mapping={IMPORT_MAPPING}
             onImport={handleImportStudents}
+            onError={(msg) => setAlertMsg(msg)}
           />
           <button className={styles.addBtn} onClick={handleAdd}>
             + Добавить студента
@@ -189,21 +201,22 @@ export default function StudentsPage() {
         ) : students.length === 0 ? (
           <div className={styles.empty}>Студенты не найдены</div>
         ) : (
+          <>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>ФИО</th>
-                <th>Группа</th>
-                <th>Курс</th>
-                <th>Телефон</th>
-                <th>Комната</th>
-                <th>Заселение</th>
-                <th>Статус</th>
+                <SortTh column="fullName" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>ФИО</SortTh>
+                <SortTh column="group" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Группа</SortTh>
+                <SortTh column="course" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Курс</SortTh>
+                <SortTh column="phone" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Телефон</SortTh>
+                <SortTh column="room.number" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Комната</SortTh>
+                <SortTh column="movedIn" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Заселение</SortTh>
+                <SortTh column="status" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Статус</SortTh>
                 <th>Действия</th>
               </tr>
             </thead>
             <tbody>
-              {students.map((s) => (
+              {paginatedData.map((s) => (
                 <>
                   <tr
                     key={s.id}
@@ -241,7 +254,14 @@ export default function StudentsPage() {
                             {s.status === 'PENDING' && (
                               <button
                                 className={styles.confirmBtn}
-                                onClick={(e) => { e.stopPropagation(); handleConfirm(s.id) }}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setConfirm({
+                                    message: 'Подтвердить подписание заявления?',
+                                    action: () => handleConfirm(s.id),
+                                    variant: 'default',
+                                  })
+                                }}
                               >
                                 Подтвердить
                               </button>
@@ -256,7 +276,14 @@ export default function StudentsPage() {
                             )}
                             <button
                               className={styles.checkoutBtn}
-                              onClick={(e) => { e.stopPropagation(); handleCheckout(s.id) }}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setConfirm({
+                                  message: 'Выселить студента?',
+                                  action: () => handleCheckout(s.id),
+                                  variant: 'danger',
+                                })
+                              }}
                             >
                               Выселить
                             </button>
@@ -334,6 +361,8 @@ export default function StudentsPage() {
               ))}
             </tbody>
           </table>
+          <PaginationBar page={page} totalPages={totalPages} onPage={setPage} />
+          </>
         )}
       </div>
 
@@ -367,6 +396,28 @@ export default function StudentsPage() {
           }}
         />
       )}
+
+      <ConfirmModal
+        open={confirm !== null}
+        title="Подтверждение"
+        message={confirm?.message || ''}
+        confirmLabel="Да"
+        cancelLabel="Отмена"
+        variant={confirm?.variant || 'default'}
+        onConfirm={async () => {
+          const action = confirm?.action
+          setConfirm(null)
+          if (action) await action()
+        }}
+        onCancel={() => setConfirm(null)}
+      />
+
+      <AlertModal
+        open={alertMsg !== null}
+        title="Результат импорта"
+        message={alertMsg || ''}
+        onClose={() => setAlertMsg(null)}
+      />
     </>
   )
 }

@@ -1,14 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '../utils/api'
 import { exportToExcel } from '../utils/excel'
+import ConfirmModal from '../components/ConfirmModal'
+import SortTh from '../components/SortTh'
+import useSort from '../utils/useSort'
+import usePagination from '../utils/usePagination'
+import PaginationBar from '../components/PaginationBar'
 import styles from './PaymentsPage.module.css'
 
 const MONTH_NAMES = [
   'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
 ]
-
-const AMOUNT = 10000
 
 export default function PaymentsPage() {
   const now = new Date()
@@ -17,6 +20,8 @@ export default function PaymentsPage() {
   const [floor, setFloor] = useState('')
   const [students, setStudents] = useState([])
   const [loading, setLoading] = useState(true)
+  const [confirm, setConfirm] = useState(null)
+  const [amount, setAmount] = useState(10000)
 
   const fetchPayments = useCallback(async () => {
     setLoading(true)
@@ -31,22 +36,28 @@ export default function PaymentsPage() {
     fetchPayments()
   }, [fetchPayments])
 
+  useEffect(() => {
+    api('/stats').then((s) => { if (s.paymentAmount) setAmount(s.paymentAmount) }).catch(() => {})
+  }, [])
+
   const handleMarkPaid = async (studentId) => {
     await api('/payments', {
       method: 'POST',
-      body: JSON.stringify({ studentId, month, year, amount: AMOUNT }),
+      body: JSON.stringify({ studentId, month, year, amount }),
     })
     fetchPayments()
   }
 
   const handleRemovePayment = async (paymentId) => {
-    if (!window.confirm('Отменить оплату?')) return
     await api(`/payments/${paymentId}`, { method: 'DELETE' })
     fetchPayments()
   }
 
   const paidCount = students.filter((s) => s.paid).length
   const unpaidCount = students.length - paidCount
+
+  const { sortedData, sortColumn, sortDir, handleSort } = useSort(students, '')
+  const { paginatedData, page, totalPages, setPage } = usePagination(sortedData)
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '—'
@@ -66,7 +77,7 @@ export default function PaymentsPage() {
             fullName: s.fullName,
             group: s.group,
             roomNumber: s.room ? s.room.number : '',
-            amount: AMOUNT.toLocaleString('ru-RU') + ' ₸',
+            amount: amount.toLocaleString('ru-RU') + ' ₸',
             paid: s.paid ? 'Оплачено' : 'Не оплачено',
             paidAt: s.payment ? formatDate(s.payment.paidAt) : '—',
           }))
@@ -119,25 +130,26 @@ export default function PaymentsPage() {
         ) : students.length === 0 ? (
           <div className={styles.empty}>Нет заселённых студентов</div>
         ) : (
+          <>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>ФИО</th>
-                <th>Группа</th>
-                <th>Комната</th>
+                <SortTh column="fullName" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>ФИО</SortTh>
+                <SortTh column="group" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Группа</SortTh>
+                <SortTh column="room.number" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Комната</SortTh>
                 <th>Сумма</th>
-                <th>Статус</th>
-                <th>Дата оплаты</th>
+                <SortTh column="paid" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Статус</SortTh>
+                <SortTh column="payment.paidAt" currentColumn={sortColumn} sortDir={sortDir} onSort={handleSort}>Дата оплаты</SortTh>
                 <th>Действия</th>
               </tr>
             </thead>
             <tbody>
-              {students.map((s) => (
+              {paginatedData.map((s) => (
                 <tr key={s.id}>
                   <td>{s.fullName}</td>
                   <td>{s.group}</td>
                   <td>{s.room ? `${s.room.number} (${s.room.floor} эт.)` : '—'}</td>
-                  <td>{AMOUNT.toLocaleString('ru-RU')} ₸</td>
+                  <td>{amount.toLocaleString('ru-RU')} ₸</td>
                   <td>
                     {s.paid ? (
                       <span className={styles.badgePaid}>Оплачено</span>
@@ -150,7 +162,11 @@ export default function PaymentsPage() {
                     {s.paid ? (
                       <button
                         className={styles.cancelBtn}
-                        onClick={() => handleRemovePayment(s.payment.id)}
+                        onClick={() => setConfirm({
+                          message: 'Отменить оплату?',
+                          action: () => handleRemovePayment(s.payment.id),
+                          variant: 'danger',
+                        })}
                       >
                         Отменить
                       </button>
@@ -167,8 +183,25 @@ export default function PaymentsPage() {
               ))}
             </tbody>
           </table>
+          <PaginationBar page={page} totalPages={totalPages} onPage={setPage} />
+          </>
         )}
       </div>
+
+      <ConfirmModal
+        open={confirm !== null}
+        title="Подтверждение"
+        message={confirm?.message || ''}
+        confirmLabel="Да"
+        cancelLabel="Отмена"
+        variant={confirm?.variant || 'default'}
+        onConfirm={async () => {
+          const action = confirm?.action
+          setConfirm(null)
+          if (action) await action()
+        }}
+        onCancel={() => setConfirm(null)}
+      />
     </>
   )
 }

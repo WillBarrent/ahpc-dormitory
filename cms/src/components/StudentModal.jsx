@@ -5,6 +5,12 @@ import styles from './StudentModal.module.css'
 export default function StudentModal({ student, onClose, onSaved }) {
   const isEditing = !!student
 
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
   const [fullName, setFullName] = useState(student?.fullName || '')
   const [course, setCourse] = useState(student?.course || 1)
   const [group, setGroup] = useState(student?.group || '')
@@ -54,6 +60,17 @@ export default function StudentModal({ student, onClose, onSaved }) {
   }
 
   const selectedRoom = rooms.find((r) => r.id === Number(roomId))
+
+  // Собираем номера занятых мест (чтобы не предлагать их в выпадающем списке)
+  const takenBedNumbers = new Set(
+    (selectedRoom?.takenBeds || [])
+      .filter((tb) => tb.status === 'occupied')
+      .map((tb) => tb.bedNumber)
+  )
+  // Если редактируем — убираем текущего студента из занятых, чтобы он мог остаться на своём месте
+  if (isEditing && student?.bedNumber) {
+    takenBedNumbers.delete(student.bedNumber)
+  }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -152,11 +169,12 @@ export default function StudentModal({ student, onClose, onSaved }) {
                 <option value="">—</option>
                 {selectedRoom &&
                   Array.from({ length: selectedRoom.totalBeds }, (_, i) => i + 1).map(
-                    (n) => (
-                      <option key={n} value={n}>
-                        Место {n}
-                      </option>
-                    )
+                    (n) =>
+                      takenBedNumbers.has(n) ? null : (
+                        <option key={n} value={n}>
+                          Место {n}
+                        </option>
+                      )
                   )}
               </select>
             </div>

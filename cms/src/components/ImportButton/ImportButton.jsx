@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { parseExcelFile } from '../../utils/excel'
 import styles from './ImportButton.module.css'
 
-export default function ImportButton({ onImport, label = '📤 Импорт', mapping }) {
+export default function ImportButton({ onImport, label = '📤 Импорт', mapping, onError }) {
   const inputRef = useRef(null)
   const [loading, setLoading] = useState(false)
 
@@ -25,7 +25,8 @@ export default function ImportButton({ onImport, label = '📤 Импорт', ma
 
       onImport(rows)
     } catch (err) {
-      alert(err.message)
+      if (onError) onError(err.message)
+      else alert(err.message)
     } finally {
       setLoading(false)
       // Reset input so the same file can be re-uploaded

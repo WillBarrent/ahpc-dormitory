@@ -1,0 +1,31 @@
+.th {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.th:hover {
+  background: #f0f2f5;
+}
+
+.label {
+  margin-right: 4px;
+}
+
+.arrow {
+  font-size: 8px;
+  color: #3b82f6;
+  vertical-align: middle;
+}
+
+.arrowInactive {
+  font-size: 8px;
+  color: #d1d5db;
+  vertical-align: middle;
+  visibility: hidden;
+}
+
+.th:hover .arrowInactive {
+  visibility: visible;
+}

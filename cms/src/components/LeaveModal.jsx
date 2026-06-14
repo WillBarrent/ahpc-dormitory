@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styles from './LeaveModal.module.css'
 import { api } from '../utils/api'
 
@@ -14,6 +14,12 @@ function addDays(days) {
 }
 
 export default function LeaveModal({ student, onClose, onSaved }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
   const [startDate, setStartDate] = useState(todayStr())
   const [endDate, setEndDate] = useState(addDays(7))
   const [reason, setReason] = useState('')
