@@ -31,10 +31,24 @@ function FloorsPage() {
   const [submittedBooking, setSubmittedBooking] = useState(null)
   const [legendOpen, setLegendOpen] = useState(false)
   const [roomMap, setRoomMap] = useState({})
+  const [mapLoading, setMapLoading] = useState(false)
+  const [mapError, setMapError] = useState(null)
   const t = useT()
 
   useEffect(() => {
-    fetchRoomMap(activeFloor).then(setRoomMap)
+    let cancelled = false
+    setMapLoading(true)
+    setMapError(null)
+
+    fetchRoomMap(activeFloor)
+      .then((data) => {
+        if (!cancelled) { setRoomMap(data); setMapLoading(false) }
+      })
+      .catch((err) => {
+        if (!cancelled) { setMapError(err.message); setMapLoading(false) }
+      })
+
+    return () => { cancelled = true }
   }, [activeFloor])
 
   const Floor = FLOOR_PLANS[activeFloor]
@@ -105,6 +119,10 @@ function FloorsPage() {
                 onBook={handleBook}
               />
             </div>
+          ) : mapLoading ? (
+            <div className={s.statusMsg}>Загрузка плана этажа...</div>
+          ) : mapError ? (
+            <div className={s.statusMsg}>{mapError}</div>
           ) : (
             <>
               <div className={s.floorPlan}>

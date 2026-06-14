@@ -83,11 +83,29 @@
 .legendToilet { background: #7bc8c4; }
 .legendTech { background: #7F8C8D; }
 
+.statusMsg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  font-family: var(--font);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  padding: 3rem 1rem;
+}
+
 .roomView {
   width: 100%;
   display: flex;
   justify-content: center;
   padding: 2rem 1rem;
+}
+
+@media (max-width: 480px) {
+  .roomView {
+    padding: 0;
+    align-items: flex-start;
+  }
 }
 
 @media (min-width: 768px) {

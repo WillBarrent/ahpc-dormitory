@@ -2,7 +2,7 @@ import { useState } from 'react'
 import useT from '../../i18n/useT.js'
 import s from './BookingForm.module.css'
 
-const API_URL = 'http://localhost:3001/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
 export default function BookingForm({ room, bedNumber, onSuccess, onCancel }) {
   const t = useT()

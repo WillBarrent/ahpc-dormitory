@@ -1,0 +1,12 @@
+.icon {
+  width: 80px;
+  height: 44px;
+}
+
+.iconFree {
+  color: #2dd4bf;
+}
+
+.iconOccupied {
+  color: #a8a29e;
+}

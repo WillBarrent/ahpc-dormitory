@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import useT from '../../i18n/useT.js'
 import s from './BookingStatusPage.module.css'
 
-const API_URL = 'http://localhost:3001/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
 const STATUS_LABELS = {
   PENDING: 'На рассмотрении',
@@ -71,11 +71,37 @@ export default function BookingStatusPage() {
       <main className={s.main}>
         <div className={s.card}>
           <div className={s.cardHeader}>
+            <div className={s.illustration}>
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M15 15L20 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M7.5 10L9 11.5L12.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
             <h1 className={s.title}>Проверка статуса бронирования</h1>
             <p className={s.subtitle}>
               Введите ФИО и телефон, указанные при бронировании
             </p>
           </div>
+
+          {!searched && (
+            <div className={s.steps}>
+              <div className={s.step}>
+                <span className={s.stepNum}>1</span>
+                <span className={s.stepText}>Введите ФИО и номер телефона</span>
+              </div>
+              <div className={s.stepDivider} />
+              <div className={s.step}>
+                <span className={s.stepNum}>2</span>
+                <span className={s.stepText}>Нажмите «Проверить статус»</span>
+              </div>
+              <div className={s.stepDivider} />
+              <div className={s.step}>
+                <span className={s.stepNum}>3</span>
+                <span className={s.stepText}>Узнайте решение по вашей заявке</span>
+              </div>
+            </div>
+          )}
 
           <form className={s.form} onSubmit={handleCheck}>
             <div className={s.fields}>

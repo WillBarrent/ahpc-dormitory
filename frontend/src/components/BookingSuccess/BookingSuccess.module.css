@@ -1,87 +1,122 @@
 .card {
-  background: #fff;
-  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid var(--border);
   padding: 2.5rem 2rem;
-  max-width: 440px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 28rem;
+  background: var(--bg);
   text-align: center;
-  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
 }
 
 .icon {
   color: #10b981;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .title {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary, #1e293b);
+  font-weight: 800;
+  color: var(--text);
   margin: 0 0 0.75rem;
+  letter-spacing: -0.01em;
 }
 
 .text {
-  font-size: 0.9375rem;
-  color: var(--text-primary, #334155);
+  font-size: 0.875rem;
+  color: var(--text-muted);
   margin: 0 0 0.5rem;
-  line-height: 1.5;
+  line-height: 1.6;
+}
+
+.text strong {
+  color: var(--text);
 }
 
 .subtext {
-  font-size: 0.875rem;
-  color: var(--text-muted, #64748b);
+  font-size: 0.8125rem;
+  color: var(--text-faint);
   margin: 0 0 1.75rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .statusLink {
-  color: #3b82f6;
-  text-decoration: none;
-  font-weight: 500;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .statusLink:hover {
-  text-decoration: underline;
+  color: var(--accent);
 }
 
 .actions {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .backButton {
-  font-family: inherit;
-  font-size: 0.9375rem;
-  font-weight: 600;
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: #fff;
-  background: var(--accent, #3b82f6);
-  border: none;
+  background: var(--accent);
+  border: 2px solid var(--accent);
   padding: 0.65rem 1.75rem;
-  border-radius: 8px;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: opacity 0.2s;
 }
 
 .backButton:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .statusButton {
-  font-family: inherit;
-  font-size: 0.9375rem;
+  font-family: var(--font);
+  font-size: 10px;
   font-weight: 600;
-  color: #1e293b;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: transparent;
+  border: 2px solid var(--border);
   padding: 0.65rem 1.75rem;
-  border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.15s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .statusButton:hover {
-  background: #e2e8f0;
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* ---- mobile ---- */
+@media (max-width: 480px) {
+  .card {
+    padding: 2rem 1.25rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .backButton,
+  .statusButton {
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
+    padding: 0.75rem;
+  }
 }

@@ -111,3 +111,50 @@
 .bookButton:hover {
   opacity: 0.85;
 }
+
+/* ---- mobile ---- */
+@media (max-width: 480px) {
+  .header {
+    padding: 1rem;
+  }
+
+  .roomNumber {
+    font-size: 1.75rem;
+  }
+
+  .backButton {
+    font-size: 9px;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .bed {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .bed > svg {
+    width: 48px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  .bedStatus {
+    flex: 1;
+    font-size: 11px;
+  }
+
+  .bookButton {
+    font-size: 11px;
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
