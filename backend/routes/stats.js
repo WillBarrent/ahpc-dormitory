@@ -34,6 +34,7 @@ router.get('/', async (req, res) => {
     pendingBookings,
     currentMonth,
     currentYear,
+    paymentAmount: 10000, // стоимость проживания в месяц (тенге)
   })
 })
 

@@ -27,6 +27,9 @@ model Student {
   status     StudentStatus @default(PENDING)
   movedIn    DateTime?
   movedOut   DateTime?
+
+  suspiciousBookings Booking[] @relation("SuspiciousMatch")
+
   payments   Payment[]
   absences   Absence[]
   createdAt  DateTime      @default(now())
@@ -56,6 +59,10 @@ model Booking {
   room      Room          @relation(fields: [roomId], references: [id])
   bedNumber Int
   status    BookingStatus @default(PENDING)
+
+  similarStudentId Int?
+  similarStudent   Student? @relation("SuspiciousMatch", fields: [similarStudentId], references: [id])
+
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 }

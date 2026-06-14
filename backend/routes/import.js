@@ -101,6 +101,20 @@ router.post('/students', async (req, res) => {
         }
       }
 
+      // Prevent duplicate students during import
+      const duplicate = await prisma.student.findFirst({
+        where: {
+          fullName: { equals: String(s.fullName).trim(), mode: 'insensitive' },
+          movedOut: null,
+        },
+      })
+
+      if (duplicate) {
+        results.errors.push({ row: rowNum, error: 'Студент с таким именем уже существует' })
+        results.skipped++
+        continue
+      }
+
       await prisma.student.create({
         data: {
           fullName: String(s.fullName),

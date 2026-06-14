@@ -4,6 +4,39 @@ import requireAuth from '../middleware/auth.js'
 
 const router = Router()
 
+// ----- Helpers -----
+
+/** Удаляет из телефона всё кроме цифр и берёт последние 10 цифр (номер без кода страны) */
+function normalizePhone(phone) {
+  const digits = phone.replace(/\D/g, '')
+  return digits.slice(-10)
+}
+
+/** Расстояние Левенштейна между двумя строками */
+function levenshtein(a, b) {
+  const m = a.length, n = b.length
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0))
+  for (let i = 0; i <= m; i++) dp[i][0] = i
+  for (let j = 0; j <= n; j++) dp[0][j] = j
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
+    }
+  }
+  return dp[m][n]
+}
+
+/** Сходство имён в процентах (0..1), нечувствительно к регистру и порядку слов */
+function nameSimilarity(a, b) {
+  const s1 = a.toLowerCase().replace(/\s+/g, ' ').trim()
+  const s2 = b.toLowerCase().replace(/\s+/g, ' ').trim()
+  const dist = levenshtein(s1, s2)
+  const maxLen = Math.max(s1.length, s2.length)
+  return maxLen === 0 ? 1 : 1 - dist / maxLen
+}
+
 // POST /api/bookings — public, create a booking
 router.post('/', async (req, res) => {
   const { fullName, course, group, phone, roomId, bedNumber } = req.body
@@ -42,6 +75,23 @@ router.post('/', async (req, res) => {
     return res.status(409).json({ error: 'Это место уже занято или забронировано' })
   }
 
+  // Fuzzy check against existing students — flag if similar found (admin decides)
+  let similarStudentId = null
+  const normPhone = normalizePhone(phone)
+  const existingStudents = await prisma.student.findMany({
+    where: { movedOut: null },
+  })
+
+  const match = existingStudents.find((s) => {
+    const phoneMatch = normalizePhone(s.phone || '') === normPhone
+    const nameMatch = nameSimilarity(s.fullName, fullName) >= 0.8
+    return phoneMatch && nameMatch
+  })
+
+  if (match) {
+    similarStudentId = match.id
+  }
+
   const booking = await prisma.booking.create({
     data: {
       fullName,
@@ -50,6 +100,7 @@ router.post('/', async (req, res) => {
       phone: phone || null,
       roomId: Number(roomId),
       bedNumber: Number(bedNumber),
+      similarStudentId,
     },
     include: { room: { select: { number: true, floor: true } } },
   })
@@ -91,7 +142,10 @@ router.get('/', async (req, res) => {
 
   const bookings = await prisma.booking.findMany({
     where,
-    include: { room: { select: { number: true, floor: true } } },
+    include: {
+      room: { select: { number: true, floor: true } },
+      similarStudent: { select: { id: true, fullName: true } },
+    },
     orderBy: { createdAt: 'desc' },
   })
 

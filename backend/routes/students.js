@@ -4,6 +4,31 @@ import requireAuth from '../middleware/auth.js'
 
 const router = Router()
 
+// ----- Helpers (same fuzzy matching as bookings) -----
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0))
+  for (let i = 0; i <= m; i++) dp[i][0] = i
+  for (let j = 0; j <= n; j++) dp[0][j] = j
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
+    }
+  }
+  return dp[m][n]
+}
+
+function nameSimilarity(a, b) {
+  const s1 = a.toLowerCase().replace(/\s+/g, ' ').trim()
+  const s2 = b.toLowerCase().replace(/\s+/g, ' ').trim()
+  const dist = levenshtein(s1, s2)
+  const maxLen = Math.max(s1.length, s2.length)
+  return maxLen === 0 ? 1 : 1 - dist / maxLen
+}
+
 // All student routes require admin auth
 router.use(requireAuth)
 
@@ -90,6 +115,23 @@ router.post('/', async (req, res) => {
     if (room.students.length >= room.totalBeds) {
       return res.status(400).json({ error: 'В комнате нет свободных мест' })
     }
+  }
+
+  // Prevent duplicate students (fuzzy check)
+  const existingStudents = await prisma.student.findMany({
+    where: { movedOut: null },
+  })
+
+  const existing = existingStudents.find((s) => {
+    const normPhone1 = (phone || '').replace(/\D/g, '').slice(-10)
+    const normPhone2 = (s.phone || '').replace(/\D/g, '').slice(-10)
+    const phoneMatch = normPhone1 && normPhone2 && normPhone1 === normPhone2
+    const nameMatch = nameSimilarity(s.fullName, fullName) >= 0.8
+    return phoneMatch && nameMatch
+  })
+
+  if (existing) {
+    return res.status(409).json({ error: 'Студент с таким именем уже заселён' })
   }
 
   const student = await prisma.student.create({
