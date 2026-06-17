@@ -138,7 +138,7 @@ export default function StudentsPage() {
       phone: s.phone || '',
       roomNumber: s.room ? s.room.number : '',
       bedNumber: s.bedNumber || '',
-      status: s.movedOut ? 'Выселен' : s.status === 'ACTIVE' ? 'Заселён' : 'Ожидает',
+      status: s.movedOut ? 'Выселен' : s.currentAbsence && s.currentAbsence.status === 'ACTIVE' ? 'В убытии' : s.status === 'ACTIVE' ? 'Заселён' : 'Ожидает',
       movedIn: formatDate(s.movedIn),
       movedOut: formatDate(s.movedOut),
     }))
