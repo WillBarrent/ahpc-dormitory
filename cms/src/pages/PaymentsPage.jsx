@@ -36,11 +36,16 @@ export default function PaymentsPage() {
 
   const fetchPayments = useCallback(async () => {
     setLoading(true)
-    const params = new URLSearchParams({ month, year })
-    if (floor) params.set('floor', floor)
-    const data = await api(`/payments?${params}`)
-    setStudents(data)
-    setLoading(false)
+    try {
+      const params = new URLSearchParams({ month, year })
+      if (floor) params.set('floor', floor)
+      const data = await api(`/payments?${params}`)
+      setStudents(data)
+    } catch (err) {
+      console.error('fetchPayments error:', err)
+    } finally {
+      setLoading(false)
+    }
   }, [month, year, floor])
 
   useEffect(() => {
@@ -61,16 +66,24 @@ export default function PaymentsPage() {
     (year === now.getFullYear() && month > now.getMonth() + 1)
 
   const handleMarkPaid = async (studentId) => {
-    await api('/payments', {
-      method: 'POST',
-      body: JSON.stringify({ studentId, month, year, amount }),
-    })
-    fetchPayments()
+    try {
+      await api('/payments', {
+        method: 'POST',
+        body: JSON.stringify({ studentId, month, year, amount }),
+      })
+      fetchPayments()
+    } catch (err) {
+      console.error('handleMarkPaid error:', err)
+    }
   }
 
   const handleRemovePayment = async (paymentId) => {
-    await api(`/payments/${paymentId}`, { method: 'DELETE' })
-    fetchPayments()
+    try {
+      await api(`/payments/${paymentId}`, { method: 'DELETE' })
+      fetchPayments()
+    } catch (err) {
+      console.error('handleRemovePayment error:', err)
+    }
   }
 
   const paidCount = students.filter((s) => s.paid).length
@@ -241,7 +254,7 @@ export default function PaymentsPage() {
                         className={styles.cancelBtn}
                         onClick={() => setConfirm({
                           message: 'Отменить оплату?',
-                          action: () => handleRemovePayment(s.payment.id),
+                          action: () => handleRemovePayment(s.payment?.id),
                           variant: 'danger',
                         })}
                       >

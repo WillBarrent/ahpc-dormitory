@@ -39,13 +39,18 @@ export default function LeavesPage() {
 
   const fetchAbsences = useCallback(async () => {
     setLoading(true)
-    const params = new URLSearchParams()
-    if (debouncedSearch) params.set('search', debouncedSearch)
-    if (statusFilter && statusFilter !== 'ALL') params.set('status', statusFilter)
-    const query = params.toString()
-    const data = await api(`/absences${query ? `?${query}` : ''}`)
-    setAbsences(data)
-    setLoading(false)
+    try {
+      const params = new URLSearchParams()
+      if (debouncedSearch) params.set('search', debouncedSearch)
+      if (statusFilter && statusFilter !== 'ALL') params.set('status', statusFilter)
+      const query = params.toString()
+      const data = await api(`/absences${query ? `?${query}` : ''}`)
+      setAbsences(data)
+    } catch (err) {
+      setAlertMsg(err.message)
+    } finally {
+      setLoading(false)
+    }
   }, [debouncedSearch, statusFilter])
 
   useEffect(() => {
@@ -186,7 +191,7 @@ export default function LeavesPage() {
                   <td className={isOverdue(a) ? styles.periodOverdue : ''}>
                     {formatDate(a.startDate)} – {formatDate(a.endDate)}
                   </td>
-                  <td className={styles.reasonCell}>{a.reason}</td>
+                  <td className={styles.reasonCell}>{a.reason || '—'}</td>
                   <td>
                     <span className={getStatusClass(a)}>
                       {getStatusLabel(a)}

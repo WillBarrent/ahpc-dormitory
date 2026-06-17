@@ -4,9 +4,12 @@ import requireAuth from '../middleware/auth.js'
 
 const router = Router()
 
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next)
+
 router.use(requireAuth)
 
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const now = new Date()
   const currentMonth = now.getMonth() + 1
   const currentYear = now.getFullYear()
@@ -16,7 +19,13 @@ router.get('/', async (req, res) => {
     prisma.student.count({ where: { movedOut: null, roomId: { not: null } } }),
     prisma.student.count({ where: { movedOut: null, roomId: { not: null }, status: 'ACTIVE' } }),
     prisma.student.count({ where: { movedOut: null, roomId: { not: null }, status: 'PENDING' } }),
-    prisma.payment.count({ where: { month: currentMonth, year: currentYear } }),
+    prisma.payment.count({
+      where: {
+        month: currentMonth,
+        year: currentYear,
+        student: { movedOut: null, roomId: { not: null } },
+      },
+    }),
     prisma.booking.count({ where: { status: 'PENDING' } }),
     prisma.paymentConfig.findFirst(),
   ])
@@ -37,6 +46,6 @@ router.get('/', async (req, res) => {
     currentYear,
     paymentAmount: paymentConfig?.amount ?? 10000,
   })
-})
+}))
 
 export default router

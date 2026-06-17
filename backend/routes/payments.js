@@ -4,6 +4,9 @@ import requireAuth from '../middleware/auth.js'
 
 const router = Router()
 
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next)
+
 router.use(requireAuth)
 
 function getMonthRange(year, month) {
@@ -14,16 +17,16 @@ function getMonthRange(year, month) {
 }
 
 // GET /api/payments/config
-router.get('/config', async (req, res) => {
+router.get('/config', asyncHandler(async (req, res) => {
   let config = await prisma.paymentConfig.findFirst()
   if (!config) {
     config = await prisma.paymentConfig.create({ data: { id: 1, amount: 10000 } })
   }
   res.json(config)
-})
+}))
 
 // PUT /api/payments/config
-router.put('/config', async (req, res) => {
+router.put('/config', asyncHandler(async (req, res) => {
   const { amount } = req.body
   if (!amount || amount < 1) {
     return res.status(400).json({ error: 'Укажите корректную сумму' })
@@ -34,10 +37,10 @@ router.put('/config', async (req, res) => {
     create: { id: 1, amount: Number(amount) },
   })
   res.json(config)
-})
+}))
 
 // GET /api/payments?month=4&year=2026&floor=2
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { month, year, floor } = req.query
 
   if (!month || !year) {
@@ -80,10 +83,10 @@ router.get('/', async (req, res) => {
   }))
 
   res.json(result)
-})
+}))
 
 // POST /api/payments — mark student as paid
-router.post('/', async (req, res) => {
+router.post('/', asyncHandler(async (req, res) => {
   const { studentId, month, year, amount } = req.body
 
   if (!studentId || !month || !year || !amount) {
@@ -130,10 +133,10 @@ router.post('/', async (req, res) => {
   })
 
   res.status(201).json(payment)
-})
+}))
 
 // DELETE /api/payments/:id — remove payment record
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', asyncHandler(async (req, res) => {
   const payment = await prisma.payment.findUnique({
     where: { id: Number(req.params.id) },
   })
@@ -147,6 +150,6 @@ router.delete('/:id', async (req, res) => {
   })
 
   res.json({ success: true })
-})
+}))
 
 export default router

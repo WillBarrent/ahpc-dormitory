@@ -6,8 +6,11 @@ import requireAuth from '../middleware/auth.js'
 
 const router = Router()
 
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next)
+
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', asyncHandler(async (req, res) => {
   const { login, password } = req.body
 
   if (!login || !password) {
@@ -31,15 +34,15 @@ router.post('/login', async (req, res) => {
   )
 
   res.json({ token, name: admin.name })
-})
+}))
 
 // GET /api/auth/me
-router.get('/me', requireAuth, async (req, res) => {
+router.get('/me', requireAuth, asyncHandler(async (req, res) => {
   const admin = await prisma.admin.findUnique({
     where: { id: req.admin.id },
     select: { id: true, login: true, name: true },
   })
   res.json(admin)
-})
+}))
 
 export default router

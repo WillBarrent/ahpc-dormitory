@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import { api } from '../utils/api'
 import { exportToExcel } from '../utils/excel'
@@ -47,15 +47,20 @@ export default function StudentsPage() {
 
   const fetchStudents = useCallback(async () => {
     setLoading(true)
-    const params = new URLSearchParams()
-    if (debouncedSearch) params.set('search', debouncedSearch)
-    if (floor) params.set('floor', floor)
-    if (statusFilter !== 'active') params.set('status', statusFilter)
-    const query = params.toString()
+    try {
+      const params = new URLSearchParams()
+      if (debouncedSearch) params.set('search', debouncedSearch)
+      if (floor) params.set('floor', floor)
+      if (statusFilter !== 'active') params.set('status', statusFilter)
+      const query = params.toString()
 
-    const data = await api(`/students${query ? `?${query}` : ''}`)
-    setStudents(data)
-    setLoading(false)
+      const data = await api(`/students${query ? `?${query}` : ''}`)
+      setStudents(data)
+    } catch (err) {
+      setAlertMsg(err.message)
+    } finally {
+      setLoading(false)
+    }
   }, [debouncedSearch, floor, statusFilter])
 
   useEffect(() => {
@@ -66,13 +71,21 @@ export default function StudentsPage() {
   const { paginatedData, page, totalPages, setPage } = usePagination(sortedData)
 
   const handleCheckout = async (id) => {
-    await api(`/students/${id}/checkout`, { method: 'POST' })
-    fetchStudents()
+    try {
+      await api(`/students/${id}/checkout`, { method: 'POST' })
+      fetchStudents()
+    } catch (err) {
+      setAlertMsg(err.message)
+    }
   }
 
   const handleConfirm = async (id) => {
-    await api(`/students/${id}/confirm`, { method: 'POST' })
-    fetchStudents()
+    try {
+      await api(`/students/${id}/confirm`, { method: 'POST' })
+      fetchStudents()
+    } catch (err) {
+      setAlertMsg(err.message)
+    }
   }
 
   const handlePrintClick = (student) => {
@@ -149,7 +162,7 @@ export default function StudentsPage() {
     const msg = [
       `Создано: ${res.created}`,
       `Пропущено: ${res.skipped}`,
-      res.errors.length > 0 ? `Ошибки:\n${res.errors.map(e => `  Строка ${e.row}: ${e.error}`).join('\n')}` : '',
+      res.errors?.length > 0 ? `Ошибки:\n${res.errors.map(e => `  Строка ${e.row}: ${e.error}`).join('\n')}` : '',
     ].join('\n')
     setAlertMsg(msg)
     fetchStudents()
@@ -241,7 +254,7 @@ export default function StudentsPage() {
             </thead>
             <tbody>
               {paginatedData.map((s) => (
-                <>
+                <React.Fragment key={s.id}>
                   <tr
                     key={s.id}
                     className={expandedId === s.id ? styles.rowExpanded : styles.rowClickable}
@@ -430,7 +443,7 @@ export default function StudentsPage() {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>

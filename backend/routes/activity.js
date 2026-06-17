@@ -4,10 +4,13 @@ import requireAuth from '../middleware/auth.js'
 
 const router = Router()
 
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next)
+
 router.use(requireAuth)
 
 // GET /api/activity — recent activity feed
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const [bookings, students, payments] = await Promise.all([
     prisma.booking.findMany({
       take: 8,
@@ -74,6 +77,6 @@ router.get('/', async (req, res) => {
   items.sort((a, b) => new Date(b.time) - new Date(a.time))
 
   res.json(items.slice(0, 10))
-})
+}))
 
 export default router

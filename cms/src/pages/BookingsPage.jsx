@@ -27,13 +27,18 @@ export default function BookingsPage() {
 
   const fetchBookings = useCallback(async () => {
     setLoading(true)
-    const params = new URLSearchParams()
-    if (debouncedSearch) params.set('search', debouncedSearch)
-    if (statusFilter) params.set('status', statusFilter)
-    const query = params.toString()
-    const data = await api(`/bookings${query ? `?${query}` : ''}`)
-    setBookings(data)
-    setLoading(false)
+    try {
+      const params = new URLSearchParams()
+      if (debouncedSearch) params.set('search', debouncedSearch)
+      if (statusFilter) params.set('status', statusFilter)
+      const query = params.toString()
+      const data = await api(`/bookings${query ? `?${query}` : ''}`)
+      setBookings(data)
+    } catch (err) {
+      setAlertMsg(err.message)
+    } finally {
+      setLoading(false)
+    }
   }, [debouncedSearch, statusFilter])
 
   useEffect(() => {
@@ -50,8 +55,12 @@ export default function BookingsPage() {
   }
 
   const handleReject = async (id) => {
-    await api(`/bookings/${id}/reject`, { method: 'POST' })
-    fetchBookings()
+    try {
+      await api(`/bookings/${id}/reject`, { method: 'POST' })
+      fetchBookings()
+    } catch (err) {
+      setAlertMsg(err.message)
+    }
   }
 
   const { sortedData, sortColumn, sortDir, handleSort } = useSort(bookings, 'createdAt')

@@ -4,8 +4,11 @@ import requireAuth from '../middleware/auth.js'
 
 const router = Router()
 
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next)
+
 // GET /api/rooms — public, used by floor plans
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { floor } = req.query
   const where = floor ? { floor: Number(floor) } : {}
 
@@ -32,10 +35,10 @@ router.get('/', async (req, res) => {
   }))
 
   res.json(result)
-})
+}))
 
 // GET /api/rooms/:id — admin, detailed room info with students
-router.get('/:id', requireAuth, async (req, res) => {
+router.get('/:id', requireAuth, asyncHandler(async (req, res) => {
   const room = await prisma.room.findUnique({
     where: { id: Number(req.params.id) },
     include: {
@@ -51,25 +54,25 @@ router.get('/:id', requireAuth, async (req, res) => {
   }
 
   res.json(room)
-})
+}))
 
 // POST /api/rooms — admin, create room
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth, asyncHandler(async (req, res) => {
   const { number, floor, totalBeds, type } = req.body
   const room = await prisma.room.create({
     data: { number, floor, totalBeds, type },
   })
   res.status(201).json(room)
-})
+}))
 
 // PATCH /api/rooms/:id — admin, update room
-router.patch('/:id', requireAuth, async (req, res) => {
+router.patch('/:id', requireAuth, asyncHandler(async (req, res) => {
   const { totalBeds, type } = req.body
   const room = await prisma.room.update({
     where: { id: Number(req.params.id) },
     data: { totalBeds, type },
   })
   res.json(room)
-})
+}))
 
 export default router

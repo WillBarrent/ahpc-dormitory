@@ -29,6 +29,12 @@ app.use('/api/activity', activityRoutes)
 app.use('/api/import', importRoutes)
 app.use('/api/absences', absenceRoutes)
 
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err)
+  res.status(500).json({ error: 'Внутренняя ошибка сервера' })
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)
 })

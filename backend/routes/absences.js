@@ -4,10 +4,13 @@ import requireAuth from '../middleware/auth.js'
 
 const router = Router()
 
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next)
+
 router.use(requireAuth)
 
 // GET /api/absences — list all absences with optional filters
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { status, search } = req.query
   const where = {}
 
@@ -39,10 +42,10 @@ router.get('/', async (req, res) => {
   })
 
   res.json(absences)
-})
+}))
 
 // GET /api/absences/student/:id — get all absences for a student
-router.get('/student/:id', async (req, res) => {
+router.get('/student/:id', asyncHandler(async (req, res) => {
   const absences = await prisma.absence.findMany({
     where: { studentId: Number(req.params.id) },
     include: {
@@ -61,10 +64,10 @@ router.get('/student/:id', async (req, res) => {
   })
 
   res.json(absences)
-})
+}))
 
 // POST /api/absences/student/:id — create a new absence
-router.post('/student/:id', async (req, res) => {
+router.post('/student/:id', asyncHandler(async (req, res) => {
   const { startDate, endDate, reason } = req.body
   const studentId = Number(req.params.id)
 
@@ -99,6 +102,10 @@ router.post('/student/:id', async (req, res) => {
   const start = new Date(startDate)
   const end = new Date(endDate)
 
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return res.status(400).json({ error: 'Укажите корректные даты' })
+  }
+
   if (end <= start) {
     return res.status(400).json({ error: 'Дата возвращения должна быть позже даты убытия' })
   }
@@ -125,16 +132,20 @@ router.post('/student/:id', async (req, res) => {
   })
 
   res.status(201).json(absence)
-})
+}))
 
 // PATCH /api/absences/:id/confirm — confirm signed raspiska (PENDING → ACTIVE)
-router.patch('/:id/confirm', async (req, res) => {
+router.patch('/:id/confirm', asyncHandler(async (req, res) => {
   const absence = await prisma.absence.findUnique({
     where: { id: Number(req.params.id) },
   })
 
   if (!absence) {
     return res.status(404).json({ error: 'Убытие не найдено' })
+  }
+
+  if (absence.status === 'OVERDUE') {
+    return res.status(400).json({ error: 'Убытие просрочено, подтверждение невозможно' })
   }
 
   if (absence.status !== 'PENDING') {
@@ -159,10 +170,10 @@ router.patch('/:id/confirm', async (req, res) => {
   })
 
   res.json(updated)
-})
+}))
 
 // PATCH /api/absences/:id/complete — mark student as returned (ACTIVE → COMPLETED)
-router.patch('/:id/complete', async (req, res) => {
+router.patch('/:id/complete', asyncHandler(async (req, res) => {
   const absence = await prisma.absence.findUnique({
     where: { id: Number(req.params.id) },
   })
@@ -193,6 +204,6 @@ router.patch('/:id/complete', async (req, res) => {
   })
 
   res.json(updated)
-})
+}))
 
 export default router

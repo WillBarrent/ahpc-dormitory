@@ -50,11 +50,15 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([api('/stats'), api('/activity')]).then(([statsData, activityData]) => {
-      setStats(statsData)
-      setActivity(activityData)
-      setLoading(false)
-    })
+    Promise.all([api('/stats'), api('/activity')])
+      .then(([statsData, activityData]) => {
+        setStats(statsData)
+        setActivity(activityData)
+      })
+      .catch((err) => {
+        console.error('Dashboard load error:', err)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
   if (loading) {
@@ -65,7 +69,7 @@ export default function DashboardPage() {
     )
   }
 
-  const monthName = MONTH_NAMES[stats.currentMonth - 1]
+  const monthName = MONTH_NAMES[stats.currentMonth - 1] || `Месяц ${stats.currentMonth}`
 
   return (
     <div className={styles.page}>

@@ -4,6 +4,10 @@ import requireAuth from '../middleware/auth.js'
 
 const router = Router()
 
+// Async handler wrapper — catches errors and forwards to Express error handler
+const asyncHandler = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next)
+
 // ----- Helpers (same fuzzy matching as bookings) -----
 
 function levenshtein(a, b) {
@@ -33,7 +37,7 @@ function nameSimilarity(a, b) {
 router.use(requireAuth)
 
 // GET /api/students
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const { floor, room, search, status } = req.query
 
   const where = {}
@@ -85,10 +89,9 @@ router.get('/', async (req, res) => {
   }))
 
   res.json(result)
-})
+}))
 
-// GET /api/students/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', asyncHandler(async (req, res) => {
   const student = await prisma.student.findUnique({
     where: { id: Number(req.params.id) },
     include: { room: true },
@@ -99,19 +102,18 @@ router.get('/:id', async (req, res) => {
   }
 
   res.json(student)
-})
+}))
 
-// GET /api/students/:id/payments — payment history for a student
-router.get('/:id/payments', async (req, res) => {
+router.get('/:id/payments', asyncHandler(async (req, res) => {
   const payments = await prisma.payment.findMany({
     where: { studentId: Number(req.params.id) },
     orderBy: [{ year: 'desc' }, { month: 'desc' }],
   })
   res.json(payments)
-})
+}))
 
 // POST /api/students — register student and assign to room
-router.post('/', async (req, res) => {
+router.post('/', asyncHandler(async (req, res) => {
   const { fullName, course, group, phone, roomId, bedNumber } = req.body
 
   if (!fullName || !course || !group) {
@@ -164,10 +166,9 @@ router.post('/', async (req, res) => {
   })
 
   res.status(201).json(student)
-})
+}))
 
-// PATCH /api/students/:id — update student info or reassign room
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', asyncHandler(async (req, res) => {
   const { fullName, course, group, phone, roomId, bedNumber, movedIn } = req.body
 
   if (roomId) {
@@ -205,10 +206,9 @@ router.patch('/:id', async (req, res) => {
   })
 
   res.json(student)
-})
+}))
 
-// POST /api/students/:id/confirm — confirm document signed, activate student
-router.post('/:id/confirm', async (req, res) => {
+router.post('/:id/confirm', asyncHandler(async (req, res) => {
   const student = await prisma.student.findUnique({
     where: { id: Number(req.params.id) },
   })
@@ -228,10 +228,9 @@ router.post('/:id/confirm', async (req, res) => {
   })
 
   res.json(updated)
-})
+}))
 
-// POST /api/students/:id/checkout — move student out
-router.post('/:id/checkout', async (req, res) => {
+router.post('/:id/checkout', asyncHandler(async (req, res) => {
   const student = await prisma.student.update({
     where: { id: Number(req.params.id) },
     data: {
@@ -248,6 +247,6 @@ router.post('/:id/checkout', async (req, res) => {
   })
 
   res.json(student)
-})
+}))
 
 export default router
