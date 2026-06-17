@@ -283,6 +283,8 @@ export default function StudentsPage() {
                         <span className={styles.badgeMovedOut}>Выселен</span>
                       ) : !s.roomId ? (
                         <span className={styles.badgeUnassigned}>Не заселён</span>
+                      ) : s.currentAbsence && s.currentAbsence.status === 'ACTIVE' ? (
+                        <span className={styles.badgeLeave}>В убытии</span>
                       ) : s.status === 'PENDING' ? (
                         <span className={styles.badgePending}>Ожидает подписания</span>
                       ) : (

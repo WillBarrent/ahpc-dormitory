@@ -350,6 +350,12 @@
   color: #4b5563;
 }
 
+.badgeLeave {
+  composes: badge;
+  background: #dbeafe;
+  color: #1e40af;
+}
+
 .printBtn {
   padding: 6px 12px;
   background: #eff6ff;
