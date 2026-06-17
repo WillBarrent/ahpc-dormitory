@@ -107,6 +107,7 @@ enum AbsenceStatus {
   PENDING
   ACTIVE
   COMPLETED
+  OVERDUE
 }
 
 model Absence {

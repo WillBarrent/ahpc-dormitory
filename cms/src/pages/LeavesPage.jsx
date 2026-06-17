@@ -17,6 +17,7 @@ const STATUS_LABELS = {
   PENDING: 'Ожидает подписи',
   ACTIVE: 'В убытии',
   COMPLETED: 'Вернулся',
+  OVERDUE: 'Просрочено',
 }
 
 export default function LeavesPage() {
@@ -83,6 +84,7 @@ export default function LeavesPage() {
   }
 
   const isOverdue = (absence) => {
+    if (absence.status === 'OVERDUE') return true
     if (absence.status !== 'ACTIVE') return false
     const end = new Date(absence.endDate)
     const today = new Date()
@@ -147,6 +149,7 @@ export default function LeavesPage() {
           <option value="ALL">Все статусы</option>
           <option value="PENDING">Ожидает подписи</option>
           <option value="ACTIVE">В убытии</option>
+          <option value="OVERDUE">Просрочено</option>
           <option value="COMPLETED">Вернулся</option>
         </select>
       </div>
@@ -225,6 +228,9 @@ export default function LeavesPage() {
                       )}
                       {a.status === 'COMPLETED' && (
                         <span className={styles.returnedText}>Возвращён</span>
+                      )}
+                      {a.status === 'OVERDUE' && (
+                        <span className={styles.returnedText}>Просрочено</span>
                       )}
                     </div>
                   </td>

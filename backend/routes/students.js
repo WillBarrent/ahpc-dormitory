@@ -34,9 +34,16 @@ router.use(requireAuth)
 
 // GET /api/students
 router.get('/', async (req, res) => {
-  const { floor, room, search } = req.query
+  const { floor, room, search, status } = req.query
 
-  const where = { movedOut: null }
+  const where = {}
+  if (status === 'former') {
+    where.movedOut = { not: null }
+  } else if (status === 'all') {
+    // no movedOut filter
+  } else {
+    where.movedOut = null // default: active only
+  }
 
   if (room) {
     where.roomId = Number(room)
@@ -61,7 +68,7 @@ router.get('/', async (req, res) => {
         take: 1,
       },
       absences: {
-        where: { status: { in: ['PENDING', 'ACTIVE'] } },
+        where: { status: { in: ['PENDING', 'ACTIVE', 'OVERDUE'] } },
         take: 1,
         orderBy: { createdAt: 'desc' },
       },
@@ -231,6 +238,12 @@ router.post('/:id/checkout', async (req, res) => {
       roomId: null,
       bedNumber: null,
     },
+  })
+
+  // Mark any active or pending absences as overdue
+  await prisma.absence.updateMany({
+    where: { studentId: student.id, status: { in: ['PENDING', 'ACTIVE'] } },
+    data: { status: 'OVERDUE' },
   })
 
   res.json(student)

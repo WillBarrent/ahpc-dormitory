@@ -58,6 +58,48 @@
   padding: 20px 32px;
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.statusTabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.statusTab {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #fff;
+  color: #6b7280;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border-right: 1px solid #d1d5db;
+}
+
+.statusTab:last-child {
+  border-right: none;
+}
+
+.statusTab:hover {
+  background: #f9fafb;
+  color: #1a1a2e;
+}
+
+.statusTabActive {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.statusTabActive:hover {
+  background: #2563eb;
+  color: #fff;
 }
 
 .searchInput {
@@ -300,6 +342,12 @@
   composes: badge;
   background: #f3f4f6;
   color: #6b7280;
+}
+
+.badgeMovedOut {
+  composes: badge;
+  background: #e5e7eb;
+  color: #4b5563;
 }
 
 .printBtn {

@@ -21,6 +21,7 @@ export default function StudentsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [floor, setFloor] = useState('')
+  const [statusFilter, setStatusFilter] = useState('active')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingStudent, setEditingStudent] = useState(null)
   const [printingStudent, setPrintingStudent] = useState(null)
@@ -49,12 +50,13 @@ export default function StudentsPage() {
     const params = new URLSearchParams()
     if (debouncedSearch) params.set('search', debouncedSearch)
     if (floor) params.set('floor', floor)
+    if (statusFilter !== 'active') params.set('status', statusFilter)
     const query = params.toString()
 
     const data = await api(`/students${query ? `?${query}` : ''}`)
     setStudents(data)
     setLoading(false)
-  }, [debouncedSearch, floor])
+  }, [debouncedSearch, floor, statusFilter])
 
   useEffect(() => {
     fetchStudents()
@@ -109,10 +111,10 @@ export default function StudentsPage() {
     return new Date(dateStr).toLocaleDateString('ru-RU')
   }
 
-  const STUDENT_EXPORT_COLUMNS = ['fullName', 'course', 'group', 'phone', 'roomNumber', 'bedNumber', 'status', 'movedIn']
+  const STUDENT_EXPORT_COLUMNS = ['fullName', 'course', 'group', 'phone', 'roomNumber', 'bedNumber', 'status', 'movedIn', 'movedOut']
   const STUDENT_EXPORT_LABELS = {
     fullName: 'ФИО', course: 'Курс', group: 'Группа', phone: 'Телефон',
-    roomNumber: 'Комната', bedNumber: 'Место', status: 'Статус', movedIn: 'Дата заселения',
+    roomNumber: 'Комната', bedNumber: 'Место', status: 'Статус', movedIn: 'Дата заселения', movedOut: 'Дата выселения',
   }
 
   const handleExportExcel = () => {
@@ -123,8 +125,9 @@ export default function StudentsPage() {
       phone: s.phone || '',
       roomNumber: s.room ? s.room.number : '',
       bedNumber: s.bedNumber || '',
-      status: s.status === 'ACTIVE' ? 'Заселён' : 'Ожидает',
+      status: s.movedOut ? 'Выселен' : s.status === 'ACTIVE' ? 'Заселён' : 'Ожидает',
       movedIn: formatDate(s.movedIn),
+      movedOut: formatDate(s.movedOut),
     }))
     exportToExcel(data, STUDENT_EXPORT_COLUMNS, STUDENT_EXPORT_LABELS, 'студенты')
   }
@@ -176,6 +179,26 @@ export default function StudentsPage() {
       </div>
 
       <div className={styles.filters}>
+        <div className={styles.statusTabs}>
+          <button
+            className={`${styles.statusTab} ${statusFilter === 'active' ? styles.statusTabActive : ''}`}
+            onClick={() => setStatusFilter('active')}
+          >
+            Активные
+          </button>
+          <button
+            className={`${styles.statusTab} ${statusFilter === 'former' ? styles.statusTabActive : ''}`}
+            onClick={() => setStatusFilter('former')}
+          >
+            Выселенные
+          </button>
+          <button
+            className={`${styles.statusTab} ${statusFilter === 'all' ? styles.statusTabActive : ''}`}
+            onClick={() => setStatusFilter('all')}
+          >
+            Все
+          </button>
+        </div>
         <input
           className={styles.searchInput}
           type="text"
@@ -200,7 +223,7 @@ export default function StudentsPage() {
         {loading ? (
           <div className={styles.loading}>Загрузка...</div>
         ) : students.length === 0 ? (
-          <div className={styles.empty}>Студенты не найдены</div>
+          <div className={styles.empty}>{statusFilter === 'former' ? 'Выселенные студенты не найдены' : 'Студенты не найдены'}</div>
         ) : (
           <>
           <table className={styles.table}>
@@ -243,7 +266,9 @@ export default function StudentsPage() {
                     <td>{s.room ? `${s.room.number} (${s.room.floor} эт.)` : '—'}</td>
                     <td>{formatDate(s.movedIn)}</td>
                     <td>
-                      {!s.roomId ? (
+                      {s.movedOut ? (
+                        <span className={styles.badgeMovedOut}>Выселен</span>
+                      ) : !s.roomId ? (
                         <span className={styles.badgeUnassigned}>Не заселён</span>
                       ) : s.status === 'PENDING' ? (
                         <span className={styles.badgePending}>Ожидает подписания</span>
@@ -256,7 +281,7 @@ export default function StudentsPage() {
                         <button className={styles.editBtn} onClick={(e) => { e.stopPropagation(); handleEdit(s) }}>
                           Изменить
                         </button>
-                        {s.roomId && (
+                        {!s.movedOut && s.roomId && (
                           <>
                             <button
                               className={styles.printBtn}
@@ -340,20 +365,33 @@ export default function StudentsPage() {
                             <span className={styles.detailValue}>{formatDate(s.movedIn)}</span>
                           </div>
                           <div className={styles.detailItem}>
+                            <span className={styles.detailLabel}>Дата выселения</span>
+                            <span className={styles.detailValue}>{formatDate(s.movedOut)}</span>
+                          </div>
+                          <div className={styles.detailItem}>
                             <span className={styles.detailLabel}>Статус</span>
                             <span className={styles.detailValue}>
-                              {!s.roomId ? 'Не заселён' : s.status === 'PENDING' ? 'Ожидает подписания' : 'Заселён'}
+                              {s.movedOut
+                                ? `Выселен ${formatDate(s.movedOut)}`
+                                : !s.roomId
+                                  ? 'Не заселён'
+                                  : s.status === 'PENDING'
+                                    ? 'Ожидает подписания'
+                                    : 'Заселён'
+                              }
                             </span>
                           </div>
                           {s.currentAbsence && (
                             <div className={styles.detailItem}>
                               <span className={styles.detailLabel}>Убытие</span>
-                              <span className={`${styles.detailValue} ${new Date(s.currentAbsence.endDate) < new Date() ? styles.absenceOverdue : ''}`}>
-                                {s.currentAbsence.status === 'PENDING'
-                                  ? 'Ожидает подписи'
-                                  : new Date(s.currentAbsence.endDate) < new Date()
-                                    ? `Просрочено до ${new Date(s.currentAbsence.endDate).toLocaleDateString('ru-RU')}`
-                                    : `До ${new Date(s.currentAbsence.endDate).toLocaleDateString('ru-RU')}`
+                              <span className={`${styles.detailValue} ${s.currentAbsence.status === 'OVERDUE' || new Date(s.currentAbsence.endDate) < new Date() ? styles.absenceOverdue : ''}`}>
+                                {s.currentAbsence.status === 'OVERDUE'
+                                  ? `Просрочено (${formatDate(s.currentAbsence.startDate)} – ${formatDate(s.currentAbsence.endDate)})`
+                                  : s.currentAbsence.status === 'PENDING'
+                                    ? 'Ожидает подписи'
+                                    : new Date(s.currentAbsence.endDate) < new Date()
+                                      ? `Просрочено до ${formatDate(s.currentAbsence.endDate)}`
+                                      : `До ${formatDate(s.currentAbsence.endDate)}`
                                 }
                               </span>
                             </div>
