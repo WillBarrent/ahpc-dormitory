@@ -63,6 +63,14 @@ async function main() {
     })
   }
   console.log(`${ROOMS.length} rooms created`)
+
+  // Create default payment config
+  await prisma.paymentConfig.upsert({
+    where: { id: 1 },
+    update: { amount: 10000 },
+    create: { id: 1, amount: 10000 },
+  })
+  console.log('Payment config created: 10000 ₸')
 }
 
 main()

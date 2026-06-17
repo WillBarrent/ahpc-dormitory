@@ -27,7 +27,7 @@ const translations = {
     dormFloors: 'Этажность:',
     dormFloorsVal: '5 этажей',
     dormCapacity: 'Вместимость:',
-    dormCapacityVal: '576 мест',
+    dormCapacityVal: '108 мест',
     dormLink: 'Смотреть планировку',
 
     // Amenities
@@ -119,7 +119,7 @@ const translations = {
     dormFloors: 'Қабат саны:',
     dormFloorsVal: '5 қабат',
     dormCapacity: 'Сыйымдылығы:',
-    dormCapacityVal: '576 орын',
+    dormCapacityVal: '108 орын',
     dormLink: 'Жоспарды қарау',
 
     // Amenities

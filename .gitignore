@@ -1,3 +1,8 @@
 backend/node_modules
 cms/node_modules
 frontend/node_modules
+node_modules/
+3d-demo/node_modules/
+.playwright-mcp/
+*.pptx
+*.docx

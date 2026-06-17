@@ -26,6 +26,7 @@ export default function StudentsPage() {
   const [printingStudent, setPrintingStudent] = useState(null)
   const [rosterStudents, setRosterStudents] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
+  const [paymentHistory, setPaymentHistory] = useState({})
   const [leaveStudent, setLeaveStudent] = useState(null)
   const [confirm, setConfirm] = useState(null)
   const [alertMsg, setAlertMsg] = useState(null)
@@ -221,7 +222,19 @@ export default function StudentsPage() {
                   <tr
                     key={s.id}
                     className={expandedId === s.id ? styles.rowExpanded : styles.rowClickable}
-                    onClick={() => setExpandedId(expandedId === s.id ? null : s.id)}
+                    onClick={async () => {
+                      if (expandedId === s.id) {
+                        setExpandedId(null)
+                        return
+                      }
+                      setExpandedId(s.id)
+                      if (!paymentHistory[s.id]) {
+                        try {
+                          const data = await api(`/students/${s.id}/payments`)
+                          setPaymentHistory(prev => ({ ...prev, [s.id]: data }))
+                        } catch { /* ignore */ }
+                      }
+                    }}
                   >
                     <td>{s.fullName}</td>
                     <td>{s.group}</td>
@@ -352,6 +365,28 @@ export default function StudentsPage() {
                             ) : (
                               <span className={styles.badgeUnpaidInline}>Не оплачено</span>
                             )}
+                          </div>
+                          <div className={styles.detailItem}>
+                            <span className={styles.detailLabel}>История оплат</span>
+                            <div className={styles.paymentHistoryList}>
+                              {paymentHistory[s.id] && paymentHistory[s.id].length > 0 ? (
+                                paymentHistory[s.id].map(p => (
+                                  <div key={p.id} className={styles.paymentHistoryItem}>
+                                    <span className={styles.paymentHistoryMonth}>
+                                      {p.month}/{p.year}
+                                    </span>
+                                    <span className={styles.paymentHistoryAmount}>
+                                      {p.amount.toLocaleString('ru-RU')} ₸
+                                    </span>
+                                    <span className={styles.paymentHistoryDate}>
+                                      {new Date(p.paidAt).toLocaleDateString('ru-RU')}
+                                    </span>
+                                  </div>
+                                ))
+                              ) : (
+                                <span className={styles.detailValue}>Нет оплат</span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>

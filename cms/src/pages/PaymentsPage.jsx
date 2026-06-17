@@ -22,6 +22,17 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true)
   const [confirm, setConfirm] = useState(null)
   const [amount, setAmount] = useState(10000)
+  const [editingAmount, setEditingAmount] = useState(false)
+  const [editAmountValue, setEditAmountValue] = useState('')
+
+  function getPeriodStatus(student, month, year) {
+    if (!student.movedIn) return 'not_housed'
+    const paymentEnd = new Date(year, month, 0)
+    const paymentStart = new Date(year, month - 1, 1)
+    if (new Date(student.movedIn) > paymentEnd) return 'not_yet'
+    if (student.movedOut && new Date(student.movedOut) < paymentStart) return 'moved_out'
+    return 'valid'
+  }
 
   const fetchPayments = useCallback(async () => {
     setLoading(true)
@@ -37,8 +48,17 @@ export default function PaymentsPage() {
   }, [fetchPayments])
 
   useEffect(() => {
-    api('/stats').then((s) => { if (s.paymentAmount) setAmount(s.paymentAmount) }).catch(() => {})
+    api('/payments/config').then((c) => { if (c.amount) setAmount(c.amount) }).catch(() => {})
   }, [])
+
+  const yearRange = [
+    now.getFullYear() - 1,
+    now.getFullYear(),
+    now.getFullYear() + 1,
+  ]
+
+  const isFutureMonth = year > now.getFullYear() ||
+    (year === now.getFullYear() && month > now.getMonth() + 1)
 
   const handleMarkPaid = async (studentId) => {
     await api('/payments', {
@@ -68,6 +88,49 @@ export default function PaymentsPage() {
     <>
       <div className={styles.header}>
         <h1 className={styles.title}>Оплата</h1>
+        <div className={styles.amountDisplay}>
+          {editingAmount ? (
+            <div className={styles.amountEdit}>
+              <input
+                className={styles.amountInput}
+                type="number"
+                value={editAmountValue}
+                onChange={(e) => setEditAmountValue(e.target.value)}
+              />
+              <button
+                className={styles.amountSaveBtn}
+                onClick={async () => {
+                  const val = Number(editAmountValue)
+                  if (val < 1) return
+                  await api('/payments/config', {
+                    method: 'PUT',
+                    body: JSON.stringify({ amount: val }),
+                  })
+                  setAmount(val)
+                  setEditingAmount(false)
+                }}
+              >
+                Сохранить
+              </button>
+              <button
+                className={styles.amountCancelBtn}
+                onClick={() => setEditingAmount(false)}
+              >
+                Отмена
+              </button>
+            </div>
+          ) : (
+            <button
+              className={styles.amountButton}
+              onClick={() => {
+                setEditAmountValue(String(amount))
+                setEditingAmount(true)
+              }}
+            >
+              {amount.toLocaleString('ru-RU')} ₸/мес ✏️
+            </button>
+          )}
+        </div>
         <div className={styles.stats}>
           <span className={styles.statPaid}>{paidCount} оплатили</span>
           <span className={styles.statUnpaid}>{unpaidCount} не оплатили</span>
@@ -107,7 +170,7 @@ export default function PaymentsPage() {
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
         >
-          {[2025, 2026, 2027].map((y) => (
+          {yearRange.map((y) => (
             <option key={y} value={y}>{y}</option>
           ))}
         </select>
@@ -123,6 +186,12 @@ export default function PaymentsPage() {
           <option value="5">5 этаж</option>
         </select>
       </div>
+
+      {isFutureMonth && (
+        <div className={styles.futureWarning}>
+          Выбран будущий месяц. Оплата будет записана авансом.
+        </div>
+      )}
 
       <div className={styles.content}>
         {loading ? (
@@ -144,14 +213,22 @@ export default function PaymentsPage() {
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map((s) => (
+              {paginatedData.map((s) => {
+                const periodStatus = getPeriodStatus(s, month, year)
+                return (
                 <tr key={s.id}>
                   <td>{s.fullName}</td>
                   <td>{s.group}</td>
                   <td>{s.room ? `${s.room.number} (${s.room.floor} эт.)` : '—'}</td>
                   <td>{amount.toLocaleString('ru-RU')} ₸</td>
                   <td>
-                    {s.paid ? (
+                    {periodStatus === 'not_yet' ? (
+                      <span className={styles.badgeFuture}>Заселится позже</span>
+                    ) : periodStatus === 'moved_out' ? (
+                      <span className={styles.badgeLeft}>Выселен {formatDate(s.movedOut)}</span>
+                    ) : periodStatus === 'not_housed' ? (
+                      <span className={styles.badgeDisabled}>Не в общежитии</span>
+                    ) : s.paid ? (
                       <span className={styles.badgePaid}>Оплачено</span>
                     ) : (
                       <span className={styles.badgeUnpaid}>Не оплачено</span>
@@ -170,17 +247,20 @@ export default function PaymentsPage() {
                       >
                         Отменить
                       </button>
-                    ) : (
+                    ) : periodStatus === 'valid' ? (
                       <button
                         className={styles.payBtn}
                         onClick={() => handleMarkPaid(s.id)}
                       >
                         Отметить оплату
                       </button>
+                    ) : (
+                      <span className={styles.noAction}>—</span>
                     )}
                   </td>
                 </tr>
-              ))}
+                )
+              })}
             </tbody>
           </table>
           <PaginationBar page={page} totalPages={totalPages} onPage={setPage} />

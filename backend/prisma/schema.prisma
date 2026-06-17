@@ -49,6 +49,12 @@ model Payment {
   @@unique([studentId, month, year])
 }
 
+model PaymentConfig {
+  id        Int      @id @default(autoincrement())
+  amount    Int
+  updatedAt DateTime @updatedAt
+}
+
 model Booking {
   id        Int           @id @default(autoincrement())
   fullName  String

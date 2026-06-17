@@ -6,6 +6,36 @@ const router = Router()
 
 router.use(requireAuth)
 
+function getMonthRange(year, month) {
+  const start = new Date(year, month - 1, 1)
+  const end = new Date(year, month, 0)
+  end.setHours(23, 59, 59, 999)
+  return { start, end }
+}
+
+// GET /api/payments/config
+router.get('/config', async (req, res) => {
+  let config = await prisma.paymentConfig.findFirst()
+  if (!config) {
+    config = await prisma.paymentConfig.create({ data: { id: 1, amount: 10000 } })
+  }
+  res.json(config)
+})
+
+// PUT /api/payments/config
+router.put('/config', async (req, res) => {
+  const { amount } = req.body
+  if (!amount || amount < 1) {
+    return res.status(400).json({ error: 'Укажите корректную сумму' })
+  }
+  const config = await prisma.paymentConfig.upsert({
+    where: { id: 1 },
+    update: { amount: Number(amount) },
+    create: { id: 1, amount: Number(amount) },
+  })
+  res.json(config)
+})
+
 // GET /api/payments?month=4&year=2026&floor=2
 router.get('/', async (req, res) => {
   const { month, year, floor } = req.query
@@ -14,7 +44,14 @@ router.get('/', async (req, res) => {
     return res.status(400).json({ error: 'Укажите месяц и год' })
   }
 
-  const where = { movedOut: null, roomId: { not: null } }
+  const { start, end } = getMonthRange(Number(year), Number(month))
+  const where = {
+    movedIn: { not: null, lte: end },
+    OR: [
+      { movedOut: null },
+      { movedOut: { gte: start } },
+    ],
+  }
   if (floor) {
     where.room = { floor: Number(floor) }
   }
@@ -36,6 +73,8 @@ router.get('/', async (req, res) => {
     group: s.group,
     course: s.course,
     room: s.room,
+    movedIn: s.movedIn,
+    movedOut: s.movedOut,
     paid: s.payments.length > 0,
     payment: s.payments[0] || null,
   }))
@@ -57,6 +96,25 @@ router.post('/', async (req, res) => {
 
   if (!student) {
     return res.status(404).json({ error: 'Студент не найден' })
+  }
+
+  // Validate payment month falls within student's residency period
+  const paymentEnd = new Date(year, month, 0)
+  paymentEnd.setHours(23, 59, 59, 999)
+  const paymentStart = new Date(year, month - 1, 1)
+
+  if (!student.movedIn) {
+    return res.status(400).json({ error: 'Студент не заселён' })
+  }
+  if (student.movedIn > paymentEnd) {
+    return res.status(400).json({
+      error: `Студент заселился ${student.movedIn.toLocaleDateString('ru-RU')}. Оплата за этот период невозможна`,
+    })
+  }
+  if (student.movedOut && student.movedOut < paymentStart) {
+    return res.status(400).json({
+      error: `Студент выселился ${student.movedOut.toLocaleDateString('ru-RU')}. Оплата за этот период невозможна`,
+    })
   }
 
   const existing = await prisma.payment.findUnique({

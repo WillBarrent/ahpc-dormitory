@@ -173,6 +173,38 @@
   font-weight: 500;
 }
 
+.paymentHistoryList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.paymentHistoryItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.paymentHistoryMonth {
+  font-weight: 600;
+  color: #374151;
+}
+
+.paymentHistoryAmount {
+  font-weight: 500;
+  color: #059669;
+}
+
+.paymentHistoryDate {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
 .badgePaidInline {
   display: inline-block;
   padding: 2px 10px;

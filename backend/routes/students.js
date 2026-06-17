@@ -94,6 +94,15 @@ router.get('/:id', async (req, res) => {
   res.json(student)
 })
 
+// GET /api/students/:id/payments — payment history for a student
+router.get('/:id/payments', async (req, res) => {
+  const payments = await prisma.payment.findMany({
+    where: { studentId: Number(req.params.id) },
+    orderBy: [{ year: 'desc' }, { month: 'desc' }],
+  })
+  res.json(payments)
+})
+
 // POST /api/students — register student and assign to room
 router.post('/', async (req, res) => {
   const { fullName, course, group, phone, roomId, bedNumber } = req.body
@@ -181,7 +190,7 @@ router.patch('/:id', async (req, res) => {
       ...(course && { course }),
       ...(group && { group }),
       ...(phone !== undefined && { phone }),
-      ...(roomId !== undefined && { roomId, movedIn: roomId ? new Date() : null }),
+      ...(roomId !== undefined && { roomId }),
       ...(bedNumber !== undefined && { bedNumber }),
     },
     include: { room: { select: { number: true, floor: true } } },

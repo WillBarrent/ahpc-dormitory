@@ -11,13 +11,14 @@ router.get('/', async (req, res) => {
   const currentMonth = now.getMonth() + 1
   const currentYear = now.getFullYear()
 
-  const [rooms, housed, active, pending, paidThisMonth, pendingBookings] = await Promise.all([
+  const [rooms, housed, active, pending, paidThisMonth, pendingBookings, paymentConfig] = await Promise.all([
     prisma.room.findMany({ select: { totalBeds: true } }),
     prisma.student.count({ where: { movedOut: null, roomId: { not: null } } }),
     prisma.student.count({ where: { movedOut: null, roomId: { not: null }, status: 'ACTIVE' } }),
     prisma.student.count({ where: { movedOut: null, roomId: { not: null }, status: 'PENDING' } }),
     prisma.payment.count({ where: { month: currentMonth, year: currentYear } }),
     prisma.booking.count({ where: { status: 'PENDING' } }),
+    prisma.paymentConfig.findFirst(),
   ])
 
   const totalBeds = rooms.reduce((sum, r) => sum + r.totalBeds, 0)
@@ -34,7 +35,7 @@ router.get('/', async (req, res) => {
     pendingBookings,
     currentMonth,
     currentYear,
-    paymentAmount: 10000, // стоимость проживания в месяц (тенге)
+    paymentAmount: paymentConfig?.amount ?? 10000,
   })
 })
 

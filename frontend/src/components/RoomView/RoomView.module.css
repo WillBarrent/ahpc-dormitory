@@ -114,6 +114,10 @@
 
 /* ---- mobile ---- */
 @media (max-width: 480px) {
+  .card {
+    overflow: hidden;
+  }
+
   .header {
     padding: 1rem;
   }
@@ -135,25 +139,27 @@
 
   .bed {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    padding: 0.75rem;
   }
 
   .bed > svg {
-    width: 48px;
-    height: 28px;
+    width: 40px;
+    height: 24px;
     flex-shrink: 0;
   }
 
   .bedStatus {
     flex: 1;
-    font-size: 11px;
+    font-size: 10px;
+    min-width: 0;
   }
 
   .bookButton {
-    font-size: 11px;
-    padding: 0.5rem 1rem;
+    font-size: 10px;
+    padding: 0.4rem 0.625rem;
     white-space: nowrap;
     flex-shrink: 0;
   }
