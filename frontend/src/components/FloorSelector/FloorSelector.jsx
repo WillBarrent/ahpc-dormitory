@@ -7,7 +7,7 @@ export default function FloorSelector({ activeFloor, onSelect }) {
   return (
     <div className={s.selector}>
       <div className={s.label}>{t.floorLabel}</div>
-      {[5, 4, 3, 2, 1].map((floor) => (
+      {[5, 4, 3, 2].map((floor) => (
         <button
           key={floor}
           onClick={() => onSelect(floor)}
