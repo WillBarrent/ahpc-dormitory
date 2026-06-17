@@ -6,3 +6,7 @@ node_modules/
 .playwright-mcp/
 *.pptx
 *.docx
+*.png
+*.jpg
+*.jpeg
+docs/
