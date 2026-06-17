@@ -168,7 +168,7 @@ router.post('/', async (req, res) => {
 
 // PATCH /api/students/:id — update student info or reassign room
 router.patch('/:id', async (req, res) => {
-  const { fullName, course, group, phone, roomId, bedNumber } = req.body
+  const { fullName, course, group, phone, roomId, bedNumber, movedIn } = req.body
 
   if (roomId) {
     const room = await prisma.room.findUnique({
@@ -199,6 +199,7 @@ router.patch('/:id', async (req, res) => {
       ...(phone !== undefined && { phone }),
       ...(roomId !== undefined && { roomId }),
       ...(bedNumber !== undefined && { bedNumber }),
+      ...(movedIn !== undefined && { movedIn }),
     },
     include: { room: { select: { number: true, floor: true } } },
   })

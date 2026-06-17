@@ -194,6 +194,7 @@ router.post('/:id/confirm', async (req, res) => {
           phone: booking.phone,
           roomId: booking.roomId,
           bedNumber: booking.bedNumber,
+          movedIn: new Date(),
         },
         include: { room: { select: { number: true, floor: true } } },
       })
