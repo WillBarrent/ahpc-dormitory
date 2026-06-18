@@ -30,12 +30,24 @@ export default function StudentModal({ student, onClose, onSaved }) {
     setError('')
     setSaving(true)
 
+    if (!roomId) {
+      setError('Выберите комнату')
+      setSaving(false)
+      return
+    }
+
+    if (!bedNumber) {
+      setError('Выберите номер места')
+      setSaving(false)
+      return
+    }
+
     const body = {
       fullName,
       course: Number(course),
       group,
       phone: phone || null,
-      roomId: roomId ? Number(roomId) : null,
+      roomId: Number(roomId),
       bedNumber: bedNumber ? Number(bedNumber) : null,
     }
 
@@ -148,7 +160,6 @@ export default function StudentModal({ student, onClose, onSaved }) {
                   setBedNumber('')
                 }}
               >
-                <option value="">Не назначена</option>
                 {rooms
                   .filter((r) => r.type === 'RESIDENTIAL')
                   .map((r) => (

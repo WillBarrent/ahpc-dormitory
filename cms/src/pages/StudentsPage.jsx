@@ -31,6 +31,8 @@ export default function StudentsPage() {
   const [leaveStudent, setLeaveStudent] = useState(null)
   const [confirm, setConfirm] = useState(null)
   const [alertMsg, setAlertMsg] = useState(null)
+  const [importing, setImporting] = useState(false)
+  const [importResult, setImportResult] = useState(null)
   const debouncedSearch = useDebounce(search, 400)
   const printRef = useRef(null)
   const rosterRef = useRef(null)
@@ -46,7 +48,6 @@ export default function StudentsPage() {
   })
 
   const fetchStudents = useCallback(async () => {
-    setLoading(true)
     try {
       const params = new URLSearchParams()
       if (debouncedSearch) params.set('search', debouncedSearch)
@@ -155,17 +156,19 @@ export default function StudentsPage() {
   }
 
   const handleImportStudents = async (rows) => {
-    const res = await api('/import/students', {
-      method: 'POST',
-      body: JSON.stringify({ students: rows }),
-    })
-    const msg = [
-      `Создано: ${res.created}`,
-      `Пропущено: ${res.skipped}`,
-      res.errors?.length > 0 ? `Ошибки:\n${res.errors.map(e => `  Строка ${e.row}: ${e.error}`).join('\n')}` : '',
-    ].join('\n')
-    setAlertMsg(msg)
-    fetchStudents()
+    setImporting(true)
+    setImportResult(null)
+    try {
+      const res = await api('/import/students', {
+        method: 'POST',
+        body: JSON.stringify({ students: rows }),
+      })
+      setImportResult(res)
+      fetchStudents()
+    } catch (err) {
+      setImportResult({ created: 0, skipped: rows.length, errors: [{ row: 0, error: err.message }] })
+      fetchStudents()
+    }
   }
 
   return (
@@ -502,10 +505,52 @@ export default function StudentsPage() {
 
       <AlertModal
         open={alertMsg !== null}
-        title="Результат импорта"
+        title="Внимание"
         message={alertMsg || ''}
         onClose={() => setAlertMsg(null)}
       />
+
+      {importing && (
+        <div className={styles.importOverlay} onClick={() => { if (importResult) { setImporting(false); setImportResult(null) } }}>
+          <div className={styles.importModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.importIcon}>{importResult ? '✅' : '⏳'}</div>
+            <h3 className={styles.importTitle}>
+              {importResult ? 'Импорт завершён' : 'Импорт студентов...'}
+            </h3>
+            <div className={styles.progressBar}>
+              <div className={`${styles.progressFill} ${importResult ? styles.progressDone : styles.progressActive}`} />
+            </div>
+            {importResult && (
+              <div className={styles.importStats}>
+                <div className={styles.importStatRow}>
+                  <span className={styles.importStatLabel}>Создано:</span>
+                  <span className={styles.importStatValue}>{importResult.created}</span>
+                </div>
+                <div className={styles.importStatRow}>
+                  <span className={styles.importStatLabel}>Пропущено:</span>
+                  <span className={styles.importStatValue}>{importResult.skipped}</span>
+                </div>
+                {importResult.errors?.length > 0 && (
+                  <div className={styles.importErrors}>
+                    <div className={styles.importErrorsTitle}>Ошибки:</div>
+                    {importResult.errors.map((e, i) => (
+                      <div key={i} className={styles.importError}>
+                        Строка {e.row}: {e.error}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <button
+                  className={styles.importCloseBtn}
+                  onClick={() => { setImporting(false); setImportResult(null) }}
+                >
+                  Закрыть
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }

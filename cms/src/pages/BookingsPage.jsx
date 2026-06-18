@@ -26,7 +26,6 @@ export default function BookingsPage() {
   const debouncedSearch = useDebounce(search, 400)
 
   const fetchBookings = useCallback(async () => {
-    setLoading(true)
     try {
       const params = new URLSearchParams()
       if (debouncedSearch) params.set('search', debouncedSearch)

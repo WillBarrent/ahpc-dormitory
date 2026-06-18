@@ -2,7 +2,6 @@ backend/node_modules
 cms/node_modules
 frontend/node_modules
 node_modules/
-3d-demo/node_modules/
 .playwright-mcp/
 *.pptx
 *.docx
@@ -10,3 +9,13 @@ node_modules/
 *.jpg
 *.jpeg
 docs/
+
+# Root-level files not part of the project
+3d-demo/
+ARCHITECTURE_DIAGRAMS.md
+BOOKING_FLOWCHART.md
+PRESENTATION.md
+floors-roomview-fixed-snapshot.txt
+generate-pptx.js
+ЗАКЛЮЧЕНИЕ.md
+РУКОВОДСТВО_ПО_ПРЕЗЕНТАЦИИ.md

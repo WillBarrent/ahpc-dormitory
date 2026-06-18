@@ -35,7 +35,6 @@ export default function PaymentsPage() {
   }
 
   const fetchPayments = useCallback(async () => {
-    setLoading(true)
     try {
       const params = new URLSearchParams({ month, year })
       if (floor) params.set('floor', floor)

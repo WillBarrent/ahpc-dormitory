@@ -116,7 +116,7 @@ router.get('/:id/payments', asyncHandler(async (req, res) => {
 router.post('/', asyncHandler(async (req, res) => {
   const { fullName, course, group, phone, roomId, bedNumber } = req.body
 
-  if (!fullName || !course || !group) {
+  if (!fullName || !course || !group || !roomId || !bedNumber) {
     return res.status(400).json({ error: 'Заполните обязательные поля' })
   }
 

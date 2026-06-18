@@ -38,7 +38,6 @@ export default function LeavesPage() {
   })
 
   const fetchAbsences = useCallback(async () => {
-    setLoading(true)
     try {
       const params = new URLSearchParams()
       if (debouncedSearch) params.set('search', debouncedSearch)
