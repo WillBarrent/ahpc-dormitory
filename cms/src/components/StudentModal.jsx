@@ -142,10 +142,12 @@ export default function StudentModal({ student, onClose, onSaved }) {
             <label className={styles.label}>Телефон</label>
             <input
               className={styles.input}
-              type="text"
+              type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+7 (777) 123-45-67"
+              pattern="^(\+7|8)?[\s\-]?\(?7\d{2}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$"
+              title="Введите номер в формате: +7 (777) 123-45-67 или 8 777 123 45 67"
             />
           </div>
 

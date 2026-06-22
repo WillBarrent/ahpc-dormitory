@@ -1,16 +1,11 @@
 import { Router } from 'express'
 import prisma from '../prisma/client.js'
 import requireAuth from '../middleware/auth.js'
+import { normalizePhone, validatePhone } from '../utils/phone.js'
 
 const router = Router()
 
 // ----- Helpers -----
-
-/** Удаляет из телефона всё кроме цифр и берёт последние 10 цифр (номер без кода страны) */
-function normalizePhone(phone) {
-  const digits = phone.replace(/\D/g, '')
-  return digits.slice(-10)
-}
 
 /** Расстояние Левенштейна между двумя строками */
 function levenshtein(a, b) {
@@ -43,6 +38,12 @@ router.post('/', async (req, res) => {
 
   if (!fullName || !course || !group || !phone || !roomId || !bedNumber) {
     return res.status(400).json({ error: 'Заполните все обязательные поля' })
+  }
+
+  if (!validatePhone(phone)) {
+    return res.status(400).json({
+      error: 'Некорректный формат номера телефона. Допускаются форматы: +7 (777) 123-45-67 или 8 777 123 45 67',
+    })
   }
 
   const room = await prisma.room.findUnique({
@@ -97,7 +98,7 @@ router.post('/', async (req, res) => {
       fullName,
       course: Number(course),
       group,
-      phone: phone || null,
+      phone: normalizePhone(phone),
       roomId: Number(roomId),
       bedNumber: Number(bedNumber),
       similarStudentId,
@@ -116,14 +117,22 @@ router.get('/status', async (req, res) => {
     return res.status(400).json({ error: 'Укажите ФИО и телефон' })
   }
 
-  const bookings = await prisma.booking.findMany({
-    where: {
-      fullName: { contains: fullName.trim(), mode: 'insensitive' },
-      phone: phone.trim(),
-    },
+  if (!validatePhone(phone)) {
+    return res.status(400).json({
+      error: 'Некорректный формат номера телефона. Допускаются форматы: +7 (777) 123-45-67 или 8 777 123 45 67',
+    })
+  }
+
+  const normPhone = normalizePhone(phone)
+
+  const allByName = await prisma.booking.findMany({
+    where: { fullName: { contains: fullName.trim(), mode: 'insensitive' } },
     include: { room: { select: { number: true, floor: true } } },
-    orderBy: { createdAt: 'desc' },
   })
+
+  // Фильтруем по нормализованному телефону, чтобы +7 и 8 находили одни и те же записи
+  const bookings = allByName.filter((b) => normalizePhone(b.phone) === normPhone)
+  bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
   res.json(bookings)
 })

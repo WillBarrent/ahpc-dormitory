@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import prisma from '../prisma/client.js'
 import requireAuth from '../middleware/auth.js'
+import { normalizePhone, validatePhone } from '../utils/phone.js'
 
 const router = Router()
 
@@ -120,6 +121,12 @@ router.post('/', asyncHandler(async (req, res) => {
     return res.status(400).json({ error: 'Заполните обязательные поля' })
   }
 
+  if (phone && !validatePhone(phone)) {
+    return res.status(400).json({
+      error: 'Некорректный формат номера телефона. Допускаются форматы: +7 (777) 123-45-67 или 8 777 123 45 67',
+    })
+  }
+
   if (roomId) {
     const room = await prisma.room.findUnique({
       where: { id: roomId },
@@ -140,10 +147,10 @@ router.post('/', asyncHandler(async (req, res) => {
     where: { movedOut: null },
   })
 
+  const normPhone = normalizePhone(phone)
+
   const existing = existingStudents.find((s) => {
-    const normPhone1 = (phone || '').replace(/\D/g, '').slice(-10)
-    const normPhone2 = (s.phone || '').replace(/\D/g, '').slice(-10)
-    const phoneMatch = normPhone1 && normPhone2 && normPhone1 === normPhone2
+    const phoneMatch = normPhone && normalizePhone(s.phone) === normPhone
     const nameMatch = nameSimilarity(s.fullName, fullName) >= 0.8
     return phoneMatch && nameMatch
   })
@@ -157,7 +164,7 @@ router.post('/', asyncHandler(async (req, res) => {
       fullName,
       course,
       group,
-      phone,
+      phone: normPhone || null,
       roomId,
       bedNumber,
       movedIn: roomId ? new Date() : null,
@@ -170,6 +177,12 @@ router.post('/', asyncHandler(async (req, res) => {
 
 router.patch('/:id', asyncHandler(async (req, res) => {
   const { fullName, course, group, phone, roomId, bedNumber, movedIn } = req.body
+
+  if (phone !== undefined && phone !== '' && !validatePhone(phone)) {
+    return res.status(400).json({
+      error: 'Некорректный формат номера телефона. Допускаются форматы: +7 (777) 123-45-67 или 8 777 123 45 67',
+    })
+  }
 
   if (roomId) {
     const room = await prisma.room.findUnique({
@@ -197,7 +210,7 @@ router.patch('/:id', asyncHandler(async (req, res) => {
       ...(fullName && { fullName }),
       ...(course && { course }),
       ...(group && { group }),
-      ...(phone !== undefined && { phone }),
+      ...(phone !== undefined && { phone: phone ? normalizePhone(phone) : null }),
       ...(roomId !== undefined && { roomId }),
       ...(bedNumber !== undefined && { bedNumber }),
       ...(movedIn !== undefined && { movedIn }),

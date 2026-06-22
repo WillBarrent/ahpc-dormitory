@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import prisma from '../prisma/client.js'
 import requireAuth from '../middleware/auth.js'
+import { normalizePhone, validatePhone } from '../utils/phone.js'
 
 const router = Router()
 
@@ -24,6 +25,12 @@ router.post('/students', async (req, res) => {
       // Validate required fields
       if (!s.fullName || !s.course || !s.group) {
         results.errors.push({ row: rowNum, error: 'Отсутствуют обязательные поля (ФИО, курс, группа)' })
+        results.skipped++
+        continue
+      }
+
+      if (s.phone && !validatePhone(String(s.phone))) {
+        results.errors.push({ row: rowNum, error: `Некорректный номер телефона: ${s.phone}` })
         results.skipped++
         continue
       }
@@ -120,7 +127,7 @@ router.post('/students', async (req, res) => {
           fullName: String(s.fullName),
           course,
           group: String(s.group),
-          phone: s.phone ? String(s.phone) : null,
+          phone: s.phone ? normalizePhone(String(s.phone)) : null,
           roomId,
           bedNumber,
           movedIn: roomId ? new Date() : null,
